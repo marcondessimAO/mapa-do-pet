@@ -26,7 +26,9 @@ void main() {
       expect(PetSex.fromName('???'), PetSex.unknown);
     });
 
-    test('PetSpecies.tryParse returns null for invalid names (species is required)', () {
+    test(
+        'PetSpecies.tryParse returns null for invalid names (species is required)',
+        () {
       expect(PetSpecies.tryParse('dog'), PetSpecies.dog);
       expect(PetSpecies.tryParse('cat'), PetSpecies.cat);
       expect(PetSpecies.tryParse('bird'), isNull);

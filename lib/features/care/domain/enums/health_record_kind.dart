@@ -6,5 +6,6 @@ enum HealthRecordKind {
   general;
 
   static HealthRecordKind fromName(String? value) =>
-      values.firstWhere((e) => e.name == value, orElse: () => HealthRecordKind.general);
+      values.firstWhere((e) => e.name == value,
+          orElse: () => HealthRecordKind.general);
 }

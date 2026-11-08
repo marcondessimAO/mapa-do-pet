@@ -136,7 +136,7 @@ test/                     # espelha lib/
 ## 🗺️ Roadmap
 
 - [x] Fase 0 — Planejamento, documentação e esqueleto
-- [ ] Fase 1 — Domínio e dados de `pets` (TDD)
+- [x] Fase 1 — Domínio e dados de `pets` (TDD)
 - [ ] Fase 2 — Cadastro e lista
 - [ ] Fase 3 — Mapa
 - [ ] Fase 4 — Perfil e edição

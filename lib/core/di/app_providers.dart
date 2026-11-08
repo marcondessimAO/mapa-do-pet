@@ -1,14 +1,40 @@
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
+import '../../features/pets/data/datasources/pet_local_datasource.dart';
+import '../../features/pets/data/repositories/pet_repository_impl.dart';
+import '../../features/pets/domain/repositories/pet_repository.dart';
+import '../../features/pets/domain/usecases/delete_pet.dart';
+import '../../features/pets/domain/usecases/get_pets.dart';
+import '../../features/pets/domain/usecases/register_pet.dart';
+import '../../features/pets/domain/usecases/update_pet.dart';
 import '../database/app_database.dart';
+import '../utils/clock.dart';
 
 /// Composition root: único lugar que conhece as implementações concretas.
 ///
-/// Fase 0: apenas o banco. Repositórios, use cases e ViewModels entram
-/// conforme as fases do plano de desenvolvimento.
+/// Registra infraestrutura, repositórios e use cases. ViewModels entram a
+/// partir da Fase 2, conforme o plano de desenvolvimento.
 List<SingleChildWidget> buildAppProviders({required AppDatabase database}) => [
+      // Infraestrutura
       Provider<AppDatabase>.value(value: database),
-      // TODO(T1-6): PetRepository -> PetRepositoryImpl(PetLocalDataSource(database))
+
+      // Pets: dados
+      Provider<PetRepository>(
+        create: (context) =>
+            PetRepositoryImpl(PetLocalDataSource(context.read<AppDatabase>())),
+      ),
+
+      // Pets: casos de uso
+      Provider<RegisterPet>(
+          create: (context) => RegisterPet(context.read<PetRepository>())),
+      Provider<UpdatePet>(
+          create: (context) =>
+              UpdatePet(context.read<PetRepository>(), systemNow)),
+      Provider<DeletePet>(
+          create: (context) => DeletePet(context.read<PetRepository>())),
+      Provider<GetPets>(
+          create: (context) => GetPets(context.read<PetRepository>())),
+
       // TODO(T5-3): CareRepository -> CareRepositoryImpl(CareLocalDataSource(database))
     ];

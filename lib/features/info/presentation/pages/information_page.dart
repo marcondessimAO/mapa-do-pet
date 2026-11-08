@@ -31,7 +31,8 @@ class InformationPage extends StatelessWidget {
             Center(
               child: Text(
                 'Adote um pet, mude uma vida!',
-                style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                style: textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w700),
               ),
             ),
           ],

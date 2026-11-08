@@ -15,7 +15,9 @@ Pet buildPet({PetSpecies species = PetSpecies.dog, String? name}) => Pet(
 
 void main() {
   group('Pet', () {
-    test('only species is required; everything else defaults to unknown (RN-01)', () {
+    test(
+        'only species is required; everything else defaults to unknown (RN-01)',
+        () {
       final pet = buildPet();
 
       expect(pet.rabiesVaccination, TriState.unknown);

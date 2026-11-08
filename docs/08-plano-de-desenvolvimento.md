@@ -13,12 +13,14 @@ Detalha as 7 fases do [plano do projeto §14](plano-do-projeto.md#14-plano-de-de
 |------------|:------:|------------|
 | Plano do projeto, documentação e UML (`docs/`) | ✅ | Diagramas em Mermaid |
 | README | ✅ | |
-| Esqueleto: pastas, tema, `Result`/`Failure`, `AppDatabase` + migração 001, shell com 3 abas, tela Informações | 🟡 | Escrito **sem Flutter instalado**: ainda não foi compilado nem analisado |
-| Domínio inicial: enums, `Pet`, `PetLocation`, `CareRecord` (sealed), `CareSummary`, interfaces de repositório | 🟡 | Idem |
-| Testes unitários iniciais (5 arquivos) | 🟡 | Escritos, **nunca executados** |
-| Projeto Flutter de plataforma (`android/`, `ios/`) | ⬜ | Gerado por `flutter create` (T0-2) |
+| Esqueleto: pastas, tema, `Result`/`Failure`, `AppDatabase` + migração 001, shell com 3 abas, tela Informações | ✅ | `flutter analyze` limpo; validado com Flutter 3.47 / Dart 3.13 |
+| Domínio inicial: enums, `Pet`, `PetLocation`, `CareRecord` (sealed), `CareSummary`, interfaces de repositório | ✅ | Testado |
+| Testes: unitários, de dados (SQLite em memória) e use cases | ✅ | 95 testes passando; cobertura de domain+data+core ≈ 94 % |
+| Projeto Flutter de plataforma (`android/`, `ios/`) | ✅ | Gerado; permissões `INTERNET` e textos de câmera/galeria configurados |
+| **Fase 1 — domínio e dados de `pets`** (T1-1…T1-7) | ✅ | Validador, filtros, mapper, datasource, repositório SQLite, use cases e DI |
+| Fase 2 — cadastro e lista | ⬜ | Próxima |
 
-> ⚠️ **Primeira ação obrigatória:** executar T0-1 a T0-4. Até lá, nada do esqueleto está comprovado. Se o analisador ou os testes apontarem erros, corrigir **antes** da Fase 1.
+> ✅ **Fases 0 e 1 concluídas** (exceto T0-6 e T0-9, e o teste em emulador de T0-1/T0-5, que dependem do grupo e de um aparelho). Próximo passo: **Fase 2**.
 
 ## 1. Visão geral das fases
 
@@ -54,14 +56,14 @@ Após a Fase 1, **Fase 2 (pets)**, **Fase 5 (cuidados — camadas domain/data)**
 
 | ID | Tarefa | Tam. | Depende | Status | Pronto quando |
 |----|--------|:----:|---------|:------:|----------------|
-| T0-1 | Instalar Flutter + Android Studio/SDK; `flutter doctor` sem erros | M | — | ⬜ | `flutter doctor` verde para Android |
-| T0-2 | Gerar plataformas: `flutter create --platforms=android,ios --org br.edu.mapadopet --project-name mapa_do_pet .` (manter `lib/`, `pubspec.yaml`, `analysis_options.yaml`; apagar `test/widget_test.dart` de exemplo) | P | T0-1 | ⬜ | Pastas `android/` e `ios/` existem; `git diff` não alterou `lib/` |
-| T0-3 | `flutter pub get`; `flutter pub outdated`; ajustar versões do `pubspec.yaml` | P | T0-2 | ⬜ | Dependências resolvidas sem conflito |
-| T0-4 | Validar o esqueleto: `flutter analyze` e `flutter test` | P | T0-3 | ⬜ | 0 avisos; todos os testes verdes (corrigir o que falhar) |
-| T0-5 | Permissões: `INTERNET` (Android release), `NSCameraUsageDescription`/`NSPhotoLibraryUsageDescription` (iOS); `applicationId` | P | T0-2 | ⬜ | App abre no emulador na aba Mapa |
+| T0-1 | Instalar Flutter + Android Studio/SDK; `flutter doctor` sem erros | M | — | 🟡 | `flutter doctor` verde para Android |
+| T0-2 | Gerar plataformas: `flutter create --platforms=android,ios --org br.edu.mapadopet --project-name mapa_do_pet .` (manter `lib/`, `pubspec.yaml`, `analysis_options.yaml`; apagar `test/widget_test.dart` de exemplo) | P | T0-1 | ✅ | Pastas `android/` e `ios/` existem; `git diff` não alterou `lib/` |
+| T0-3 | `flutter pub get`; `flutter pub outdated`; ajustar versões do `pubspec.yaml` | P | T0-2 | ✅ | Dependências resolvidas sem conflito |
+| T0-4 | Validar o esqueleto: `flutter analyze` e `flutter test` | P | T0-3 | ✅ | 0 avisos; todos os testes verdes (corrigir o que falhar) |
+| T0-5 | Permissões: `INTERNET` (Android release), `NSCameraUsageDescription`/`NSPhotoLibraryUsageDescription` (iOS); `applicationId` | P | T0-2 | 🟡 | App abre no emulador na aba Mapa |
 | T0-6 | Repositório Git: `main`/`develop`, proteção de `main`, template de PR, `.gitignore` | P | — | ⬜ | Primeiro PR aprovado e mesclado |
-| T0-7 | Estrutura, tema, `Result`/`Failure`, `AppDatabase`, shell, tela Informações | G | — | 🟡 | Ver T0-4 |
-| T0-8 | Teste de migração 001: banco em memória com `sqflite_common_ffi`; `CHECK`s e `CASCADE` ativos | M | T0-4 | ⬜ | Teste prova que apagar `pets` remove `care_records` |
+| T0-7 | Estrutura, tema, `Result`/`Failure`, `AppDatabase`, shell, tela Informações | G | — | ✅ | Ver T0-4 |
+| T0-8 | Teste de migração 001: banco em memória com `sqflite_common_ffi`; `CHECK`s e `CASCADE` ativos | M | T0-4 | ✅ | Teste prova que apagar `pets` remove `care_records` |
 | T0-9 | Decidir pendências ([plano §17](plano-do-projeto.md#17-decisões-em-aberto-a-equipe-define)): centro do mapa, remover animal, etc. | P | — | ⬜ | Decisões registradas (ADR se mudar arquitetura) |
 
 **Saída da fase:** `flutter run` abre o app com 3 abas; CI local (analyze + test) verde.
@@ -74,13 +76,13 @@ Após a Fase 1, **Fase 2 (pets)**, **Fase 5 (cuidados — camadas domain/data)**
 
 | ID | Tarefa (teste primeiro) | Tam. | Depende | Req. |
 |----|-------------------------|:----:|---------|------|
-| T1-1 | `PetValidator` + `ValidationFailure`: espécie, gestante×macho, ninhada 1–20, tamanho de textos | M | T0-4 | RN-01…04, RN-13 |
-| T1-2 | `TextNormalizer` (sem acento/caixa) + `SpeciesFilter`, `TextSearchFilter`, `CompositePetFilter` | M | T0-4 | RF-02, RF-08 |
-| T1-3 | `PetMapper`: `toMap`/`fromMap` com *round-trip* de todos os campos, datas ISO-8601 UTC | M | T0-4 | — |
-| T1-4 | `PetLocalDataSource` (insert/update/delete/query) com SQLite em memória | M | T0-8, T1-3 | RNF-01 |
-| T1-5 | `PetRepositoryImpl`: `Result`, `INSERT OR IGNORE` (idempotência), exceção → `StorageFailure`, id inexistente → `NotFoundFailure` | M | T1-4 | RN-09 |
-| T1-6 | Use cases: `RegisterPet`, `UpdatePet` (atualiza `updatedAt`, não toca em cuidados), `DeletePet`, `GetPets(filter)` | M | T1-1, T1-5 | RF-05, RF-10, RF-16 |
-| T1-7 | Registrar no composition root (`app_providers.dart`) | P | T1-6 | — |
+| T1-1 ✅ | `PetValidator` + `ValidationFailure`: espécie, gestante×macho, ninhada 1–20, tamanho de textos | M | T0-4 | RN-01…04, RN-13 |
+| T1-2 ✅ | `TextNormalizer` (sem acento/caixa) + `SpeciesFilter`, `TextSearchFilter`, `CompositePetFilter` | M | T0-4 | RF-02, RF-08 |
+| T1-3 ✅ | `PetMapper`: `toMap`/`fromMap` com *round-trip* de todos os campos, datas ISO-8601 UTC | M | T0-4 | — |
+| T1-4 ✅ | `PetLocalDataSource` (insert/update/delete/query) com SQLite em memória | M | T0-8, T1-3 | RNF-01 |
+| T1-5 ✅ | `PetRepositoryImpl`: `Result`, `INSERT OR IGNORE` (idempotência), exceção → `StorageFailure`, id inexistente → `NotFoundFailure` | M | T1-4 | RN-09 |
+| T1-6 ✅ | Use cases: `RegisterPet`, `UpdatePet` (atualiza `updatedAt`, não toca em cuidados), `DeletePet`, `GetPets(filter)` | M | T1-1, T1-5 | RF-05, RF-10, RF-16 |
+| T1-7 ✅ | Registrar no composition root (`app_providers.dart`) | P | T1-6 | — |
 
 **Saída:** cobertura ≥ 80 % em `pets/domain` e `pets/data`; teste prova que editar pet não altera `care_records` (RN-07).
 

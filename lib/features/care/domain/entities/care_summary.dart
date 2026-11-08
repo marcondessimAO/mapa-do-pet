@@ -14,7 +14,8 @@ final class CareSummary {
   });
 
   factory CareSummary.from(Iterable<CareRecord> records) {
-    final sorted = [...records]..sort((a, b) => b.occurredAt.compareTo(a.occurredAt));
+    final sorted = [...records]
+      ..sort((a, b) => b.occurredAt.compareTo(a.occurredAt));
 
     DateTime? latestOf(CareType type) {
       for (final record in sorted) {

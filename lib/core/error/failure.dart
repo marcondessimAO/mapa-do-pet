@@ -18,7 +18,8 @@ final class NotFoundFailure extends Failure {
 }
 
 final class StorageFailure extends Failure {
-  const StorageFailure([super.message = 'Não foi possível salvar. Tente novamente.']);
+  const StorageFailure(
+      [super.message = 'Não foi possível salvar. Tente novamente.']);
 }
 
 final class ImageFailure extends Failure {
