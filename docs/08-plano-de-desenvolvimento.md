@@ -1,0 +1,201 @@
+# 08 · Plano de desenvolvimento
+
+Detalha as 7 fases do [plano do projeto §14](plano-do-projeto.md#14-plano-de-desenvolvimento) em **tarefas executáveis**, na ordem TDD.
+
+**Legenda de status:** ✅ feito · 🟡 feito, ainda não validado · ⬜ pendente
+**Tamanho:** P (≤ 2 h) · M (meio dia) · G (1 dia ou mais)
+
+---
+
+## 0. Situação atual
+
+| Entregável | Status | Observação |
+|------------|:------:|------------|
+| Plano do projeto, documentação e UML (`docs/`) | ✅ | Diagramas em Mermaid |
+| README | ✅ | |
+| Esqueleto: pastas, tema, `Result`/`Failure`, `AppDatabase` + migração 001, shell com 3 abas, tela Informações | 🟡 | Escrito **sem Flutter instalado**: ainda não foi compilado nem analisado |
+| Domínio inicial: enums, `Pet`, `PetLocation`, `CareRecord` (sealed), `CareSummary`, interfaces de repositório | 🟡 | Idem |
+| Testes unitários iniciais (5 arquivos) | 🟡 | Escritos, **nunca executados** |
+| Projeto Flutter de plataforma (`android/`, `ios/`) | ⬜ | Gerado por `flutter create` (T0-2) |
+
+> ⚠️ **Primeira ação obrigatória:** executar T0-1 a T0-4. Até lá, nada do esqueleto está comprovado. Se o analisador ou os testes apontarem erros, corrigir **antes** da Fase 1.
+
+## 1. Visão geral das fases
+
+```mermaid
+flowchart LR
+  F0["Fase 0<br/>Fundação"] --> F1["Fase 1<br/>Domínio e dados (pets)"]
+  F1 --> F2["Fase 2<br/>Cadastro e lista"]
+  F1 --> F5["Fase 5<br/>Cuidados"]
+  F2 --> F3["Fase 3<br/>Mapa"]
+  F2 --> F4["Fase 4<br/>Perfil e edição"]
+  F4 --> F5
+  F3 --> F6["Fase 6<br/>Acabamento"]
+  F4 --> F6
+  F5 --> F6
+```
+
+Após a Fase 1, **Fase 2 (pets)**, **Fase 5 (cuidados — camadas domain/data)** e a base da **Fase 3 (mapa)** podem andar em paralelo por pessoas diferentes.
+
+## 2. Ciclo de cada tarefa (TDD)
+
+1. Criar a branch `feature/T<fase>-<n>-<nome>`.
+2. **RED:** escrever o teste e vê-lo falhar pelo motivo certo.
+3. **GREEN:** implementar o mínimo para passar.
+4. **REFACTOR:** limpar, mantendo verde.
+5. `flutter analyze` · `dart format .` · `flutter test`.
+6. Atualizar doc/UML afetados; abrir PR com checklist ([guia](07-guia-de-contribuicao.md)).
+
+---
+
+## Fase 0 — Fundação
+
+**Objetivo:** ambiente funcionando e esqueleto comprovado (compila, analisa, testa).
+
+| ID | Tarefa | Tam. | Depende | Status | Pronto quando |
+|----|--------|:----:|---------|:------:|----------------|
+| T0-1 | Instalar Flutter + Android Studio/SDK; `flutter doctor` sem erros | M | — | ⬜ | `flutter doctor` verde para Android |
+| T0-2 | Gerar plataformas: `flutter create --platforms=android,ios --org br.edu.mapadopet --project-name mapa_do_pet .` (manter `lib/`, `pubspec.yaml`, `analysis_options.yaml`; apagar `test/widget_test.dart` de exemplo) | P | T0-1 | ⬜ | Pastas `android/` e `ios/` existem; `git diff` não alterou `lib/` |
+| T0-3 | `flutter pub get`; `flutter pub outdated`; ajustar versões do `pubspec.yaml` | P | T0-2 | ⬜ | Dependências resolvidas sem conflito |
+| T0-4 | Validar o esqueleto: `flutter analyze` e `flutter test` | P | T0-3 | ⬜ | 0 avisos; todos os testes verdes (corrigir o que falhar) |
+| T0-5 | Permissões: `INTERNET` (Android release), `NSCameraUsageDescription`/`NSPhotoLibraryUsageDescription` (iOS); `applicationId` | P | T0-2 | ⬜ | App abre no emulador na aba Mapa |
+| T0-6 | Repositório Git: `main`/`develop`, proteção de `main`, template de PR, `.gitignore` | P | — | ⬜ | Primeiro PR aprovado e mesclado |
+| T0-7 | Estrutura, tema, `Result`/`Failure`, `AppDatabase`, shell, tela Informações | G | — | 🟡 | Ver T0-4 |
+| T0-8 | Teste de migração 001: banco em memória com `sqflite_common_ffi`; `CHECK`s e `CASCADE` ativos | M | T0-4 | ⬜ | Teste prova que apagar `pets` remove `care_records` |
+| T0-9 | Decidir pendências ([plano §17](plano-do-projeto.md#17-decisões-em-aberto-a-equipe-define)): centro do mapa, remover animal, etc. | P | — | ⬜ | Decisões registradas (ADR se mudar arquitetura) |
+
+**Saída da fase:** `flutter run` abre o app com 3 abas; CI local (analyze + test) verde.
+
+---
+
+## Fase 1 — Domínio e dados de `pets`
+
+**Objetivo:** salvar, ler, atualizar e apagar animais com regras validadas. **Sem UI nova.**
+
+| ID | Tarefa (teste primeiro) | Tam. | Depende | Req. |
+|----|-------------------------|:----:|---------|------|
+| T1-1 | `PetValidator` + `ValidationFailure`: espécie, gestante×macho, ninhada 1–20, tamanho de textos | M | T0-4 | RN-01…04, RN-13 |
+| T1-2 | `TextNormalizer` (sem acento/caixa) + `SpeciesFilter`, `TextSearchFilter`, `CompositePetFilter` | M | T0-4 | RF-02, RF-08 |
+| T1-3 | `PetMapper`: `toMap`/`fromMap` com *round-trip* de todos os campos, datas ISO-8601 UTC | M | T0-4 | — |
+| T1-4 | `PetLocalDataSource` (insert/update/delete/query) com SQLite em memória | M | T0-8, T1-3 | RNF-01 |
+| T1-5 | `PetRepositoryImpl`: `Result`, `INSERT OR IGNORE` (idempotência), exceção → `StorageFailure`, id inexistente → `NotFoundFailure` | M | T1-4 | RN-09 |
+| T1-6 | Use cases: `RegisterPet`, `UpdatePet` (atualiza `updatedAt`, não toca em cuidados), `DeletePet`, `GetPets(filter)` | M | T1-1, T1-5 | RF-05, RF-10, RF-16 |
+| T1-7 | Registrar no composition root (`app_providers.dart`) | P | T1-6 | — |
+
+**Saída:** cobertura ≥ 80 % em `pets/domain` e `pets/data`; teste prova que editar pet não altera `care_records` (RN-07).
+
+---
+
+## Fase 2 — Cadastro e lista
+
+| ID | Tarefa | Tam. | Depende | Req. |
+|----|--------|:----:|---------|------|
+| T2-1 | `ImageStorageService` (Facade): escolher, copiar para `pet_photos/`, apagar, resolver caminho; testes com *fake* do seletor | M | T0-4 | RF-06 |
+| T2-2 | Extensões `label` pt-BR dos enums (apresentação) | P | T0-4 | — |
+| T2-3 | `TriStateSelector` (widget + teste) | M | T2-2 | RF-11 |
+| T2-4 | `PetFormViewModel`: id gerado ao abrir, `isSaving`, erros por campo, `save()` idempotente | G | T1-6 | RN-09 |
+| T2-5 | `PetRegistrationPage` em seções; Gestante oculto para macho; quantidade de filhotes condicional | G | T2-3, T2-4 | RF-05 |
+| T2-6 | `PetListViewModel` + `PetListPage` + `PetCard` + `SpeciesFilterBar`; estados carregando/vazio/sem resultado/erro | G | T1-2, T1-6 | RF-08 |
+| T2-7 | Rota `/pet/new` (recebe coordenadas; na Fase 2 pode vir de ponto fixo de teste) | P | T2-5 | — |
+
+**Saída:** é possível cadastrar (só espécie) e achar o animal na lista, inclusive após reiniciar.
+
+---
+
+## Fase 3 — Mapa
+
+| ID | Tarefa | Tam. | Depende | Req. |
+|----|--------|:----:|---------|------|
+| T3-1 | `FlutterMap` com tiles OSM, `userAgentPackageName`, atribuição visível | M | T0-5 | RNF-07 |
+| T3-2 | `PetMarker` com SVG cão/gato + `Semantics` | M | T3-1 | RF-01 |
+| T3-3 | `MapViewModel`: carregar pets, filtro de espécie, enquadramento (`LatLngBounds`) ou centro padrão | M | T1-6 | RF-01, RF-02 |
+| T3-4 | Toque em área livre → `ConfirmRegisterSheet` → `/pet/new` com `LatLng` | M | T2-7 | RF-03 |
+| T3-5 | Toque no marcador → `PetSummarySheet` (foto, nome, espécie, botão "Ver perfil") | M | T3-2 | RF-04 |
+| T3-6 | Mini-mapa de ajuste do ponto no formulário | M | T3-1, T2-5 | RF-07 |
+| T3-7 | Aviso de "sem internet" e recarga do mapa ao voltar do cadastro | P | T3-3 | — |
+
+**Saída:** cadastro de ponta a ponta pelo mapa; marcador aparece ao salvar.
+
+---
+
+## Fase 4 — Perfil e edição
+
+| ID | Tarefa | Tam. | Depende | Req. |
+|----|--------|:----:|---------|------|
+| T4-1 | `GetPetProfile` (pet + `CareSummary` vazio por enquanto) e `PetProfileViewModel` | M | T1-6 | RF-09 |
+| T4-2 | `PetProfilePage`: seções A, B, C, E, F; `AdoptionBanner`; "Não informado" para ausentes | G | T4-1 | RF-09 |
+| T4-3 | `PetEditPage` reutilizando o formulário; troca de foto (apaga a antiga só após sucesso) | G | T2-5 | RF-10, RF-11 |
+| T4-4 | Remover animal: diálogo de confirmação, cascata e remoção da foto | M | T4-2 | RF-16 |
+
+**Saída:** consultar, editar e remover; teste de integração de dados confirma que editar preserva histórico.
+
+---
+
+## Fase 5 — Cuidados e histórico
+
+| ID | Tarefa (teste primeiro) | Tam. | Depende | Req. |
+|----|-------------------------|:----:|---------|------|
+| T5-1 | `CareRecordMapper` (Factory por `type`) com *round-trip* dos 4 subtipos | M | T1-3 | RF-12 |
+| T5-2 | `CareLocalDataSource`: inserção idempotente, `CHECK`s, ordenação por `occurred_at` | M | T0-8, T5-1 | RN-06, RN-09 |
+| T5-3 | `CareRepositoryImpl` + registro no DI | M | T5-2 | — |
+| T5-4 | `AddCareRecord` com relógio injetado: data futura (RN-05), medicamento sem nome (RN-06) | M | T5-3 | RN-05, RN-06 |
+| T5-5 | `GetCareSummary` e integração em `GetPetProfile` | M | T5-3, T4-1 | RF-13 |
+| T5-6 | `CareViewModel` + `CareRecordFormSheet` (data, hora opcional, responsável, notas; campos por tipo) | G | T5-4 | RF-12 |
+| T5-7 | `LastCareHighlight`, listas por tipo (mais recente primeiro), resumo de saúde na seção C | G | T5-5, T5-6 | RF-13, RF-14 |
+
+**Saída:** critérios de aceite de cuidados do plano §15 atendidos.
+
+---
+
+## Fase 6 — Informações e acabamento
+
+| ID | Tarefa | Tam. | Depende | Req. |
+|----|--------|:----:|---------|------|
+| T6-1 | Acessibilidade: fonte a 200 %, `Semantics`, alvos ≥ 48 dp; conferir contraste com ferramenta | M | F2–F5 | RNF-05 |
+| T6-2 | `integration_test`: cadastrar → listar → registrar alimentação → reiniciar → conferir | G | F5 | RNF-01 |
+| T6-3 | Cobertura ≥ 80 % (domain/data/viewmodels); `flutter analyze` limpo; remover `TODO`s resolvidos | M | F2–F5 | RNF-06 |
+| T6-4 | Sincronizar docs/UML com o código final; capturas de tela no README | M | T6-3 | — |
+| T6-5 | Build de release (APK), vídeo/roteiro de demonstração, slides | M | T6-2 | — |
+
+**Saída:** todos os itens do [plano §15](plano-do-projeto.md#15-critérios-de-aceite-do-mvp) marcados.
+
+---
+
+## 3. Divisão sugerida (equipe de até 4)
+
+| Pessoa | Frente | Tarefas |
+|--------|--------|---------|
+| A | Fundação, dados e cuidados | F0, T1-3…T1-7, F5 (domain/data) |
+| B | Cadastro, lista e perfil | F2, F4 |
+| C | Mapa e design | F3, T6-1 |
+| D | Qualidade e documentação | testes de integração, CI local, docs/UML, T6-2…T6-5 |
+
+Regras: PRs pequenos (≤ 400 linhas), uma tarefa por PR, nunca dois PRs editando o mesmo arquivo ao mesmo tempo (combinar no grupo).
+
+## 4. Acompanhamento
+
+| Métrica | Meta |
+|---------|------|
+| Tarefas concluídas por fase | 100 % antes de abrir a próxima (exceto frentes paralelas) |
+| Cobertura (domain/data/viewmodels) | ≥ 80 % |
+| `flutter analyze` | 0 avisos |
+| Requisitos Must verificados | 15 de 15 (RF-01…RF-15) |
+
+## 5. Riscos e gatilhos
+
+| Risco | Gatilho | Resposta |
+|-------|---------|----------|
+| Versões de pacotes incompatíveis | `pub get` falha (T0-3) | Rodar `flutter pub upgrade --major-versions`; ajustar API de `flutter_map` se mudou |
+| Esqueleto com erros de compilação | T0-4 falha | Corrigir antes da Fase 1 (escrito sem compilador) |
+| Atraso | Fase 3 ou 5 passa do previsto | Cortar *Could/Should* (cluster, compartilhar, remover registro) |
+| Tiles OSM bloqueados | Mapa em branco com internet | Trocar `tileUrlTemplate` em `AppConstants` |
+| Conflitos de merge | Dois PRs no mesmo arquivo | Dividir por feature; rebase frequente em `develop` |
+
+## 6. Checklist de entrega acadêmica
+
+- [ ] Documento de planejamento (`plano-do-projeto.md`) e documentação técnica (`docs/`)
+- [ ] Diagramas UML exportados (PNG/PDF) a partir do Mermaid
+- [ ] Código no repositório com histórico de commits legível
+- [ ] App rodando (APK ou demonstração no emulador)
+- [ ] Testes e relatório de cobertura
+- [ ] Apresentação: problema → arquitetura → padrões de projeto → demo → aprendizados

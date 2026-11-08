@@ -1,0 +1,33 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+*.iml
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# IDEs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# Plataformas (gerados por `flutter create`; versione se quiser)
+**/ios/Pods/
+**/ios/.symlinks/
+**/android/.gradle/
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.*
+
+# SO
+.DS_Store
+Thumbs.db
+
+# Local
+.claude/
+
+# PDF/DOCX gerados a partir de docs/ (regeneráveis)
+docs/export/
