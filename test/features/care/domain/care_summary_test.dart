@@ -56,6 +56,18 @@ void main() {
       expect(summary.recordsOf(CareType.medication), isEmpty);
     });
 
+    test('latestOf returns the record with the greatest occurredAt', () {
+      final summary = CareSummary.from([
+        feeding('a', DateTime.utc(2025, 3, 10)),
+        feeding('b', DateTime.utc(2025, 3, 12)),
+        bath('c', DateTime.utc(2025, 3, 1)),
+      ]);
+
+      expect(summary.latestOf(CareType.feeding)!.id, 'b');
+      expect(summary.latestOf(CareType.bath)!.id, 'c');
+      expect(summary.latestOf(CareType.medication), isNull);
+    });
+
     test('records list is unmodifiable (history cannot be altered in place)',
         () {
       final summary =

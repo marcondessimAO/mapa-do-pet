@@ -21,9 +21,10 @@ Detalha as 7 fases do [plano do projeto §14](plano-do-projeto.md#14-plano-de-de
 | **Fase 2 — cadastro e lista** (T2-1…T2-7) | ✅ | Serviço de fotos, rótulos, `TriStateSelector`, `PetFormViewModel`, `PetListViewModel`, páginas de cadastro e lista; 161 testes, ViewModels ≈ 90 % |
 | **Fase 3 — mapa** (T3-1…T3-7) | ✅ | Tiles OSM com atribuição, marcadores SVG, filtro, enquadramento sem GPS, toque → confirmação → cadastro, resumo do marcador, mini-mapa no cadastro, aviso offline; 209 testes |
 | **Fase 4 — perfil e edição** (T4-1…T4-4) | ✅ | Perfil com seções A, B, C, E e F, edição que preserva o histórico, vacinação antirrábica, remoção com confirmação, foto trocada/removida com limpeza segura; lista e mapa abrem o perfil; 249 testes |
-| Fase 5 — cuidados e histórico | ⬜ | Próxima |
+| **Fase 5 — cuidados e histórico** (T5-1…T5-7) | ✅ | Registros de alimentação, banho, medicamento e saúde (só acrescentam), migração 002, destaques da última alimentação/banho, histórico por tipo, resumo de saúde no perfil; 326 testes |
+| Fase 6 — informações e acabamento | ⬜ | Próxima |
 
-> ✅ **Fases 0 a 4 concluídas** (exceto T0-6 e T0-9, e o teste em emulador de T0-1/T0-5, que dependem do grupo e de um aparelho). Próximo passo: **Fase 5**. O app ainda não foi aberto em emulador (sem Android SDK): a interface foi validada por testes de widget.
+> ✅ **Fases 0 a 5 concluídas** (exceto T0-6 e T0-9, e o teste em emulador de T0-1/T0-5, que dependem do grupo e de um aparelho). Próximo passo: **Fase 6**. O app ainda não foi aberto em emulador (sem Android SDK): a interface foi validada por testes de widget.
 
 ## 1. Visão geral das fases
 
@@ -140,13 +141,13 @@ Após a Fase 1, **Fase 2 (pets)**, **Fase 5 (cuidados — camadas domain/data)**
 
 | ID | Tarefa (teste primeiro) | Tam. | Depende | Req. |
 |----|-------------------------|:----:|---------|------|
-| T5-1 | `CareRecordMapper` (Factory por `type`) com *round-trip* dos 4 subtipos | M | T1-3 | RF-12 |
-| T5-2 | `CareLocalDataSource`: inserção idempotente, `CHECK`s, ordenação por `occurred_at` | M | T0-8, T5-1 | RN-06, RN-09 |
-| T5-3 | `CareRepositoryImpl` + registro no DI | M | T5-2 | — |
-| T5-4 | `AddCareRecord` com relógio injetado: data futura (RN-05), medicamento sem nome (RN-06) | M | T5-3 | RN-05, RN-06 |
-| T5-5 | `GetCareSummary` e integração em `GetPetProfile` | M | T5-3, T4-1 | RF-13 |
-| T5-6 | `CareViewModel` + `CareRecordFormSheet` (data, hora opcional, responsável, notas; campos por tipo) | G | T5-4 | RF-12 |
-| T5-7 | `LastCareHighlight`, listas por tipo (mais recente primeiro), resumo de saúde na seção C | G | T5-5, T5-6 | RF-13, RF-14 |
+| T5-1 ✅ | `CareRecordMapper` (Factory por `type`) com *round-trip* dos 4 subtipos | M | T1-3 | RF-12 |
+| T5-2 ✅ | **Migração 002** (`care_records.description`, usada pelo registro de saúde) + `CareLocalDataSource`: inserção idempotente, `CHECK`s, ordenação por `occurred_at` | M | T0-8, T5-1 | RN-06, RN-09 |
+| T5-3 ✅ | `CareRepositoryImpl` + registro no DI | M | T5-2 | — |
+| T5-4 ✅ | `AddCareRecord` com relógio injetado: data futura (RN-05), medicamento sem nome (RN-06) | M | T5-3 | RN-05, RN-06 |
+| T5-5 ✅ | `GetPetProfile` passa a ler os cuidados e calcular o `CareSummary` (sem um `GetCareSummary` separado: seria só um repasse) | M | T5-3, T4-1 | RF-13 |
+| T5-6 ✅ | `CareViewModel` + `CareRecordFormSheet` (data, hora opcional, responsável, notas; campos por tipo) | G | T5-4 | RF-12 |
+| T5-7 ✅ | `LastCareHighlight`, listas por tipo (mais recente primeiro), resumo de saúde na seção C | G | T5-5, T5-6 | RF-13, RF-14 |
 
 **Saída:** critérios de aceite de cuidados do plano §15 atendidos.
 

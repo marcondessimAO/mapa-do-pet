@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mapa_do_pet/core/database/app_database.dart';
+import 'package:mapa_do_pet/core/database/migrations/migrations.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../../support/test_database.dart';
@@ -74,10 +75,10 @@ void main() {
       expect(rows.first['foreign_keys'], 1);
     });
 
-    test('stores schema version 1', () async {
+    test('stores the schema version (one per migration)', () async {
       final rows = await db.rawQuery('PRAGMA user_version');
 
-      expect(rows.first['user_version'], 1);
+      expect(rows.first['user_version'], migrations.length);
     });
 
     test('rejects an invalid species (CHECK)', () async {

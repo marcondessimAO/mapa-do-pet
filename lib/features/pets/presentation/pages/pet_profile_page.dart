@@ -6,7 +6,13 @@ import 'package:provider/provider.dart';
 import '../../../../core/services/image_storage_service.dart';
 import '../../../../core/state/view_state.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/widgets/error_view.dart';
+import '../../../care/domain/entities/care_record.dart';
+import '../../../care/domain/entities/care_summary.dart';
+import '../../../care/domain/enums/care_type.dart';
+import '../../../care/presentation/labels/care_labels.dart';
+import '../../../care/presentation/widgets/care_section.dart';
 import '../../domain/entities/pet.dart';
 import '../../domain/entities/pet_profile.dart';
 import '../../domain/enums/pet_sex.dart';
@@ -192,7 +198,22 @@ class _ProfileBody extends StatelessWidget {
               label: 'Outras informações de saúde',
               value: pet.otherHealthInfo,
             ),
+            InfoRow(
+              key: const ValueKey('row-health-history'),
+              label: 'Histórico de saúde',
+              value: _healthHistory(profile.care),
+            ),
           ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 24),
+          child: CareSection(
+            petId: pet.id,
+            summary: profile.care,
+            onChanged: () => unawaited(
+              context.read<PetProfileViewModel>().load(),
+            ),
+          ),
         ),
         const AdoptionBanner(),
         const SizedBox(height: 24),
@@ -202,6 +223,21 @@ class _ProfileBody extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  /// Resumo somente-leitura dos registros de saúde (a fonte única é o
+  /// histórico de cuidados; aqui só se mostra os mais recentes).
+  static String _healthHistory(CareSummary care) {
+    final records =
+        care.recordsOf(CareType.health).whereType<HealthRecord>().toList();
+    if (records.isEmpty) return 'Nenhum atendimento registrado';
+    final lines = [
+      for (final record in records.take(3))
+        '${formatDay(record.occurredAt)} — ${record.kind.label}: '
+            '${record.description}',
+      if (records.length > 3) '+ ${records.length - 3} no histórico',
+    ];
+    return lines.join('\n');
   }
 
   static String _litter(Pet pet) {

@@ -140,7 +140,7 @@ test/                     # espelha lib/
 - [x] Fase 2 — Cadastro e lista
 - [x] Fase 3 — Mapa
 - [x] Fase 4 — Perfil e edição
-- [ ] Fase 5 — Cuidados e histórico
+- [x] Fase 5 — Cuidados e histórico
 - [ ] Fase 6 — Informações, acessibilidade e entrega
 
 Detalhes em [docs/08-plano-de-desenvolvimento.md](docs/08-plano-de-desenvolvimento.md).

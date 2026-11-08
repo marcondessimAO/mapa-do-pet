@@ -38,4 +38,13 @@ final class CareSummary {
 
   List<CareRecord> recordsOf(CareType type) =>
       records.where((record) => record.type == type).toList(growable: false);
+
+  /// O registro mais recente (maior `occurredAt`) do tipo, ou `null` se não
+  /// houver nenhum. Base do destaque de "última alimentação/banho" (RN-08).
+  CareRecord? latestOf(CareType type) {
+    for (final record in records) {
+      if (record.type == type) return record;
+    }
+    return null;
+  }
 }
