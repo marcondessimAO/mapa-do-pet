@@ -5,11 +5,14 @@ import 'package:mapa_do_pet/features/pets/domain/entities/pet_location.dart';
 import 'package:mapa_do_pet/features/pets/domain/enums/pet_sex.dart';
 import 'package:mapa_do_pet/features/pets/domain/enums/pet_species.dart';
 import 'package:mapa_do_pet/features/pets/domain/enums/tri_state.dart';
+import 'package:mapa_do_pet/features/pets/domain/entities/pet.dart';
 import 'package:mapa_do_pet/features/pets/domain/usecases/register_pet.dart';
+import 'package:mapa_do_pet/features/pets/domain/usecases/update_pet.dart';
 import 'package:mapa_do_pet/features/pets/presentation/viewmodels/pet_form_viewmodel.dart';
 
 import '../../../support/fake_image_picker.dart';
 import '../../../support/fake_pet_repository.dart';
+import '../../../support/pet_builder.dart';
 
 void main() {
   final fixedNow = DateTime.utc(2025, 3, 12, 9);
@@ -153,6 +156,154 @@ void main() {
 
       expect(seen.first, isTrue);
       expect(seen.last, isFalse);
+    });
+  });
+
+  group('editing an existing pet', () {
+    final editedAt = DateTime.utc(2025, 6, 1, 10);
+
+    Pet original() => buildPet(name: 'Rex', sex: PetSex.female).copyWith(
+          rabiesVaccination: TriState.no,
+          otherHealthInfo: 'Magro',
+          photoFileName: 'orig.jpg',
+          appearance: 'Caramelo',
+        );
+
+    PetFormViewModel buildEditVm() => PetFormViewModel.edit(
+          updatePet: UpdatePet(repository, () => editedAt),
+          imageStorage: images.service,
+          pet: original(),
+          now: () => editedAt,
+        );
+
+    Future<void> writeOriginalPhoto() async {
+      final file = images.service.fileFor('orig.jpg');
+      await file.create(recursive: true);
+      await file.writeAsBytes([9]);
+    }
+
+    setUp(() => repository.store['pet-1'] = original());
+
+    test('a new pet form is not in edit mode', () {
+      expect(buildVm().isEditing, isFalse);
+    });
+
+    test('starts with the current values of the pet', () {
+      final vm = buildEditVm();
+
+      expect(vm.isEditing, isTrue);
+      expect(vm.id, 'pet-1');
+      expect(vm.species, PetSpecies.dog);
+      expect(vm.sex, PetSex.female);
+      expect(vm.name, 'Rex');
+      expect(vm.appearance, 'Caramelo');
+      expect(vm.rabiesVaccination, TriState.no);
+      expect(vm.otherHealthInfo, 'Magro');
+      expect(vm.photoFileName, 'orig.jpg');
+      expect(vm.location.latitude, -15.79);
+    });
+
+    test('save updates the same pet and keeps createdAt (RN-07)', () async {
+      final vm = buildEditVm()
+        ..setName('Thor')
+        ..setRabies(TriState.yes);
+
+      final ok = await vm.save();
+
+      expect(ok, isTrue);
+      final saved = repository.store['pet-1']!;
+      expect(saved.name, 'Thor');
+      expect(saved.rabiesVaccination, TriState.yes);
+      expect(saved.createdAt, DateTime.utc(2025, 3, 12));
+      expect(saved.updatedAt, editedAt);
+      expect(repository.addCalls, 0);
+    });
+
+    test('untouched fields are kept and a cleared name becomes null', () async {
+      final vm = buildEditVm()..setName('');
+
+      await vm.save();
+
+      final saved = repository.store['pet-1']!;
+      expect(saved.name, isNull);
+      expect(saved.otherHealthInfo, 'Magro');
+      expect(saved.appearance, 'Caramelo');
+    });
+
+    test('other health info can be edited', () async {
+      final vm = buildEditVm()..setOtherHealthInfo('Vacinado em 2024');
+
+      await vm.save();
+
+      expect(repository.store['pet-1']!.otherHealthInfo, 'Vacinado em 2024');
+    });
+
+    test('an unknown pet fails with a general error', () async {
+      repository.store.clear();
+      final vm = buildEditVm();
+
+      final ok = await vm.save();
+
+      expect(ok, isFalse);
+      expect(vm.generalError, 'Registro não encontrado.');
+    });
+
+    test('replacing the photo deletes the old file only after saving',
+        () async {
+      await writeOriginalPhoto();
+      await images.queuePhoto();
+      final vm = buildEditVm();
+
+      await vm.pickPhoto(ImageOrigin.camera);
+      expect(vm.photoFileName, 'photo-1.jpg');
+      expect(images.service.fileFor('orig.jpg').existsSync(), isTrue);
+
+      await vm.save();
+
+      expect(images.service.fileFor('orig.jpg').existsSync(), isFalse);
+      expect(images.service.fileFor('photo-1.jpg').existsSync(), isTrue);
+      expect(repository.store['pet-1']!.photoFileName, 'photo-1.jpg');
+    });
+
+    test('removing the photo clears it and deletes the file after saving',
+        () async {
+      await writeOriginalPhoto();
+      final vm = buildEditVm();
+
+      await vm.removePhoto();
+      expect(images.service.fileFor('orig.jpg').existsSync(), isTrue);
+
+      await vm.save();
+
+      expect(images.service.fileFor('orig.jpg').existsSync(), isFalse);
+      expect(repository.store['pet-1']!.photoFileName, isNull);
+    });
+
+    test('a failed save keeps both the old and the new photo', () async {
+      await writeOriginalPhoto();
+      await images.queuePhoto();
+      final vm = buildEditVm();
+      await vm.pickPhoto(ImageOrigin.camera);
+      repository.failWith = const StorageFailure();
+
+      final ok = await vm.save();
+
+      expect(ok, isFalse);
+      expect(images.service.fileFor('orig.jpg').existsSync(), isTrue);
+      expect(images.service.fileFor('photo-1.jpg').existsSync(), isTrue);
+    });
+
+    test('discarding the form deletes only the new photo', () async {
+      await writeOriginalPhoto();
+      await images.queuePhoto();
+      final vm = buildEditVm();
+      await vm.pickPhoto(ImageOrigin.camera);
+
+      vm.dispose();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      expect(images.service.fileFor('orig.jpg').existsSync(), isTrue);
+      expect(images.service.fileFor('photo-1.jpg').existsSync(), isFalse);
     });
   });
 

@@ -5,7 +5,10 @@ import 'package:mapa_do_pet/core/services/image_storage_service.dart';
 import 'package:mapa_do_pet/core/theme/app_theme.dart';
 import 'package:mapa_do_pet/features/pets/domain/enums/pet_species.dart';
 import 'package:mapa_do_pet/features/pets/domain/usecases/get_pets.dart';
+import 'package:mapa_do_pet/features/pets/domain/usecases/delete_pet.dart';
+import 'package:mapa_do_pet/features/pets/domain/usecases/get_pet_profile.dart';
 import 'package:mapa_do_pet/features/pets/domain/usecases/register_pet.dart';
+import 'package:mapa_do_pet/features/pets/domain/usecases/update_pet.dart';
 import 'package:mapa_do_pet/features/pets/presentation/pages/pet_list_page.dart';
 import 'package:mapa_do_pet/features/pets/presentation/viewmodels/pet_list_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +21,11 @@ Widget app(FakePetRepository repository) {
   return MultiProvider(
     providers: [
       Provider<RegisterPet>.value(value: RegisterPet(repository)),
+      Provider<GetPetProfile>.value(value: GetPetProfile(repository)),
+      Provider<DeletePet>.value(value: DeletePet(repository)),
+      Provider<UpdatePet>.value(
+        value: UpdatePet(repository, () => DateTime.utc(2025, 6, 1)),
+      ),
       Provider<ImageStorageService>.value(value: widgetTestImageStorage()),
       ChangeNotifierProvider<PetListViewModel>(
         create: (_) => PetListViewModel(GetPets(repository))..load(),
@@ -110,6 +118,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Caramelo'), findsOneWidget);
+  });
+
+  testWidgets('tapping a card opens the profile (RF-09)', (tester) async {
+    await tester.pumpWidget(app(seeded()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Caramelo'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Perfil do animal'), findsOneWidget);
   });
 
   testWidgets('registration starts from the map, not from the list',

@@ -8,7 +8,10 @@ import 'package:mapa_do_pet/features/map/presentation/viewmodels/map_viewmodel.d
 import 'package:mapa_do_pet/features/map/presentation/widgets/pet_marker.dart';
 import 'package:mapa_do_pet/features/pets/domain/enums/pet_species.dart';
 import 'package:mapa_do_pet/features/pets/domain/usecases/get_pets.dart';
+import 'package:mapa_do_pet/features/pets/domain/usecases/delete_pet.dart';
+import 'package:mapa_do_pet/features/pets/domain/usecases/get_pet_profile.dart';
 import 'package:mapa_do_pet/features/pets/domain/usecases/register_pet.dart';
+import 'package:mapa_do_pet/features/pets/domain/usecases/update_pet.dart';
 import 'package:provider/provider.dart';
 
 import '../../../support/blank_tile_provider.dart';
@@ -29,6 +32,11 @@ Widget app(
     providers: [
       Provider<TileProvider>.value(value: tiles ?? BlankTileProvider()),
       Provider<RegisterPet>.value(value: RegisterPet(repository)),
+      Provider<GetPetProfile>.value(value: GetPetProfile(repository)),
+      Provider<DeletePet>.value(value: DeletePet(repository)),
+      Provider<UpdatePet>.value(
+        value: UpdatePet(repository, () => DateTime.utc(2025, 6, 1)),
+      ),
       Provider<ImageStorageService>.value(value: widgetTestImageStorage()),
       if (viewModel != null)
         ChangeNotifierProvider<MapViewModel>.value(value: viewModel)
@@ -113,6 +121,25 @@ void main() {
 
     expect(find.text('Caramelo'), findsOneWidget);
     expect(find.text('Praça da Matriz'), findsOneWidget);
+  });
+
+  testWidgets('the summary has a "Ver perfil" button that opens the profile',
+      (tester) async {
+    final repository = FakePetRepository();
+    repository.store['d'] = buildPet(
+      id: 'd',
+      name: 'Caramelo',
+      latitude: _centerLat,
+      longitude: _centerLng,
+    );
+    await pumpMap(tester, app(repository));
+    await tester.tap(find.byType(PetMarker));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Ver perfil'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Perfil do animal'), findsOneWidget);
   });
 
   testWidgets('tapping a free spot asks before registering (RF-03)',

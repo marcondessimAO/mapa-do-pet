@@ -139,7 +139,7 @@ test/                     # espelha lib/
 - [x] Fase 1 — Domínio e dados de `pets` (TDD)
 - [x] Fase 2 — Cadastro e lista
 - [x] Fase 3 — Mapa
-- [ ] Fase 4 — Perfil e edição
+- [x] Fase 4 — Perfil e edição
 - [ ] Fase 5 — Cuidados e histórico
 - [ ] Fase 6 — Informações, acessibilidade e entrega
 
