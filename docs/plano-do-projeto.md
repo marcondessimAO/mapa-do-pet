@@ -394,7 +394,7 @@ lib/
 │   ├── services/{image_storage_service.dart, image_picker_gateway.dart}
 │   ├── state/view_state.dart
 │   ├── utils/{date_formatter.dart, text_normalizer.dart}
-│   └── widgets/{empty_state.dart, error_view.dart, loading_view.dart}
+│   └── widgets/{empty_state.dart, error_view.dart, osm_tile_layer.dart, location_picker.dart}
 ├── features/
 │   ├── pets/
 │   │   ├── domain/
@@ -419,7 +419,7 @@ lib/
 │   │   └── presentation/{viewmodels/care_viewmodel.dart, widgets/{care_section, last_care_highlight, care_record_tile, care_record_form_sheet}.dart}
 │   ├── map/
 │   │   └── presentation/{viewmodels/map_viewmodel.dart, pages/map_page.dart,
-│   │                    widgets/{pet_marker, pet_summary_sheet, confirm_register_sheet, osm_attribution}.dart}
+│   │                    widgets/{pet_marker, pet_summary_sheet, confirm_register_sheet}.dart}
 │   ├── info/presentation/pages/information_page.dart
 │   └── shell/presentation/{home_shell.dart, app_bottom_navigation.dart}
 assets/markers/{dog.svg, cat.svg}

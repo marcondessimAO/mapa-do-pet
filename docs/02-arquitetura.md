@@ -164,7 +164,7 @@ O detalhe técnico (stack trace) é registrado em log; **nunca** exibido ao usu�
 
 ## 7. Navegação
 
-- `HomeShell` com `NavigationBar` + `IndexedStack` (3 abas; preserva estado do mapa).
+- `HomeShell` com `NavigationBar` + `IndexedStack` (3 abas; preserva estado do mapa). Ao abrir a aba Mapa ou Animais, o ViewModel dela recarrega, então um animal cadastrado pelo mapa já aparece na lista.
 - Rotas empilhadas via `AppRouter.onGenerateRoute`: `/pet/new` (recebe `LatLng`), `/pet/:id`, `/pet/:id/edit`.
 - Fluxo completo de telas: [uml/atividades-e-estados.md](uml/atividades-e-estados.md#3-navegação-entre-telas).
 

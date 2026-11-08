@@ -1,13 +1,13 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/services/image_storage_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/clock.dart';
+import '../../../../core/widgets/location_picker.dart';
 import '../../domain/entities/pet_location.dart';
 import '../../domain/enums/pet_age_group.dart';
 import '../../domain/enums/pet_sex.dart';
@@ -17,7 +17,6 @@ import '../../domain/enums/tri_state.dart';
 import '../../domain/usecases/register_pet.dart';
 import '../labels/pet_labels.dart';
 import '../viewmodels/pet_form_viewmodel.dart';
-import '../viewmodels/pet_list_viewmodel.dart';
 import '../widgets/tri_state_selector.dart';
 
 /// Cadastro de um novo animal no ponto [location]. Só a espécie é obrigatória.
@@ -218,6 +217,12 @@ class _RegistrationView extends StatelessWidget {
               onChanged: vm.setNotes,
             ),
             const _SectionTitle('Localização'),
+            LocationPicker(
+              location: LatLng(vm.location.latitude, vm.location.longitude),
+              onChanged: (point) =>
+                  vm.setLocation(point.latitude, point.longitude),
+            ),
+            const SizedBox(height: 12),
             Row(
               children: [
                 const Icon(Icons.place_outlined),
@@ -272,7 +277,6 @@ class _RegistrationView extends StatelessWidget {
     final vm = context.read<PetFormViewModel>();
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
-    final list = context.read<PetListViewModel>();
 
     final saved = await vm.save();
     if (!saved) {
@@ -282,7 +286,6 @@ class _RegistrationView extends StatelessWidget {
       }
       return;
     }
-    unawaited(list.load());
     messenger.showSnackBar(const SnackBar(content: Text('Animal cadastrado!')));
     navigator.pop(vm.savedPet);
   }

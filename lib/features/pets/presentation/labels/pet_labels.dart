@@ -1,3 +1,4 @@
+import '../../domain/entities/pet.dart';
 import '../../domain/enums/pet_age_group.dart';
 import '../../domain/enums/pet_sex.dart';
 import '../../domain/enums/pet_size.dart';
@@ -50,4 +51,20 @@ extension TriStateLabel on TriState {
         TriState.no => 'Não',
         TriState.unknown => 'Não sei',
       };
+}
+
+/// Textos de resumo de um animal, só com o que é conhecido (usados no cartão da
+/// lista e no resumo do mapa).
+extension PetSummaryText on Pet {
+  /// "Macho · Adulto"; vazio se sexo e idade forem desconhecidos.
+  String get detailsLine => [
+        if (sex != PetSex.unknown) sex.label,
+        if (ageGroup != PetAgeGroup.unknown) ageGroup.label,
+      ].join(' · ');
+
+  /// Referência do local, ou `null` se não houver.
+  String? get regionLine {
+    final reference = location.reference?.trim();
+    return (reference == null || reference.isEmpty) ? null : reference;
+  }
 }

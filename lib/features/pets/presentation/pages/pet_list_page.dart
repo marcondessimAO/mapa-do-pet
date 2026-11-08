@@ -3,19 +3,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/services/image_storage_service.dart';
 import '../../../../core/state/view_state.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../domain/entities/pet.dart';
-import '../../domain/entities/pet_location.dart';
 import '../viewmodels/pet_list_viewmodel.dart';
 import '../widgets/pet_card.dart';
 import '../widgets/species_filter_bar.dart';
-import 'pet_registration_page.dart';
 
 /// Lista de animais com busca por nome/região e filtro de espécie (RF-08).
+/// O cadastro começa pelo toque no mapa, então esta tela só consulta.
 class PetListPage extends StatelessWidget {
   const PetListPage({super.key});
 
@@ -25,12 +23,6 @@ class PetListPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Animais')),
-      floatingActionButton: FloatingActionButton.extended(
-        tooltip: 'Cadastrar animal',
-        onPressed: () => _openRegistration(context),
-        icon: const Icon(Icons.add),
-        label: const Text('Cadastrar'),
-      ),
       body: Column(
         children: [
           Padding(
@@ -57,22 +49,6 @@ class PetListPage extends StatelessWidget {
       ),
     );
   }
-
-  /// TODO(T3-4): o cadastro passa a nascer do toque no mapa. Até lá, este botão
-  /// abre o formulário no centro padrão do mapa.
-  void _openRegistration(BuildContext context) {
-    const center = AppConstants.defaultMapCenter;
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => PetRegistrationPage(
-          location: PetLocation(
-            latitude: center.latitude,
-            longitude: center.longitude,
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _Body extends StatelessWidget {
@@ -86,7 +62,7 @@ class _Body extends StatelessWidget {
       Loading() => const Center(child: CircularProgressIndicator()),
       Empty() => _emptyMessage(),
       Loaded(:final data) => ListView.builder(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
           itemCount: data.length,
           itemBuilder: (context, index) => PetCard(
             pet: data[index],
