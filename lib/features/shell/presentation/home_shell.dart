@@ -21,11 +21,25 @@ class HomeShell extends StatefulWidget {
   State<HomeShell> createState() => _HomeShellState();
 }
 
-class _HomeShellState extends State<HomeShell> {
+class _HomeShellState extends State<HomeShell>
+    with SingleTickerProviderStateMixin {
   static const int _mapTab = 0;
   static const int _listTab = 1;
 
   int _index = _mapTab; // abre direto no Mapa
+
+  /// Fade curto ao trocar de aba (o IndexedStack continua preservando o estado).
+  late final AnimationController _fade = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 220),
+    value: 1,
+  );
+
+  @override
+  void dispose() {
+    _fade.dispose();
+    super.dispose();
+  }
 
   static const List<Widget> _pages = [
     MapPage(),
@@ -34,6 +48,7 @@ class _HomeShellState extends State<HomeShell> {
   ];
 
   void _select(int index) {
+    if (index != _index) _fade.forward(from: 0.35);
     setState(() => _index = index);
     switch (index) {
       case _mapTab:
@@ -46,7 +61,10 @@ class _HomeShellState extends State<HomeShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _index, children: _pages),
+      body: FadeTransition(
+        opacity: CurvedAnimation(parent: _fade, curve: Curves.easeOut),
+        child: IndexedStack(index: _index, children: _pages),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: _select,
