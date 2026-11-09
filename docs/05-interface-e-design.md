@@ -1,8 +1,8 @@
 # 05 · Interface e design
 
 > Estado: reflete o app **depois do redesign** (Fase 7). Os wireframes são de baixa
-> fidelidade; as capturas reais do app no emulador entram no README quando forem
-> tiradas para a entrega.
+> fidelidade; as capturas reais do app no emulador estão em
+> [`screenshots/`](screenshots/) e na seção "Telas" do [README](../README.md).
 
 ## 1. Tokens visuais
 
@@ -327,7 +327,7 @@ Por isso o Caramelo **nunca** é cor de texto corrido; o tema fixa o rótulo dos
 | Trocar o filtro | Os alfinetes da outra espécie somem; o contador acompanha; se o animal selecionado sumir, o cartão some |
 
 **Enquadramento inicial:** na primeira carga o mapa enquadra todos os animais (zoom máx. 17),
-com margens `64 / 240 / 64 / 170` dp (esq./topo/dir./base) para os alfinetes não ficarem
+com margens `64 / 240 / 64 / 210` dp (esq./topo/dir./base) para os alfinetes não ficarem
 **atrás** do cabeçalho nem dos botões. Sem animais, fica no centro padrão
 (`AppConstants.defaultMapCenter`, ainda provisório). O app **nunca** usa a localização do usuário.
 

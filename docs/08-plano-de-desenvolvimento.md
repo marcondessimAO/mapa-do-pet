@@ -25,7 +25,7 @@ Detalha as 7 fases do [plano do projeto §14](plano-do-projeto.md#14-plano-de-de
 | **Fase 6 — informações e acabamento** | 🟡 | Acessibilidade medida, fluxo com reabertura do banco, atribuição do OSM com link e roteiro prontos. Faltam `integration_test` em aparelho, TalkBack, APK de release e slides |
 | **Fase 7 — redesign e correções após rodar no emulador** (T7-1…T7-6) | ✅ | Android SDK + emulador instalados e app executado; crash do perfil corrigido (DI); mapa e telas redesenhados (alfinetes, cartão flutuante, modo "Adicionar animal", zoom, tema moderno); 382 testes |
 
-> ✅ **Fases 0 a 5 e 7 concluídas** e **Fase 6 em grande parte** (ver o status abaixo). O app **já rodou num emulador Android**. O que resta: `integration_test` em aparelho, teste com TalkBack, capturas de tela no README, APK de release, slides, e decisões do grupo (T0-6 fluxo Git, T0-9 centro do mapa).
+> ✅ **Fases 0 a 5 e 7 concluídas** e **Fase 6 em grande parte** (ver o status abaixo). O app **já rodou num emulador Android** e as capturas de tela estão no README. O que resta: `integration_test` em aparelho, teste com TalkBack, APK de release, slides, e decisões do grupo (T0-6 fluxo Git, T0-9 centro do mapa).
 
 ## 1. Visão geral das fases
 
@@ -174,7 +174,7 @@ Após a Fase 1, **Fase 2 (pets)**, **Fase 5 (cuidados — camadas domain/data)**
 | T6-1 Acessibilidade | ✅ | Fonte a 200 %, alvos ≥ 48 dp, rótulos e contraste **medidos por testes** (ver [05 §7](05-interface-e-design.md#7-verificação-de-acessibilidade-medida)). **Falta** testar com TalkBack/VoiceOver em aparelho. |
 | T6-2 Fluxo completo | 🟡 | Feito como teste comum (`test/integration/app_flow_test.dart`): SQLite real em arquivo, cadastrar → listar → cuidados → editar → **fechar e reabrir o banco** → remover. **Falta** o `integration_test` em emulador/aparelho. |
 | T6-3 Cobertura e análise | ✅ | 382 testes; `lib/` 95,2 % (domain+data 99,1 %, ViewModels 95,2 %, UI 94,1 %); `flutter analyze` limpo; único `TODO` é a decisão em aberto do centro do mapa. |
-| T6-4 Documentação | 🟡 | Docs, UML e README sincronizados com o código (incl. o redesign da Fase 7). **Faltam** as capturas de tela no README — o emulador já existe, falta tirá-las e versioná-las. |
+| T6-4 Documentação | ✅ | Docs, UML e README sincronizados com o código (incl. o redesign da Fase 7); capturas de tela do emulador em `docs/screenshots/` e na seção "Telas" do README (dados de demonstração em João Pessoa, fotos CC0 com [créditos](screenshots/CREDITOS.md)). |
 | T6-5 Entrega | 🟡 | Roteiro e slides sugeridos em [10](10-roteiro-de-apresentacao.md). O Android SDK já está instalado; **faltam** o APK de release, o vídeo/demonstração e os slides prontos. |
 
 ---
@@ -195,7 +195,7 @@ uma interface mais moderna e interativa.
 | T7-6 | Sincronizar docs/UML | ✅ | Este conjunto de documentos |
 
 **Pendências desta fase (não feitas):** agrupar (*cluster*) alfinetes próximos; revisar o
-mapa com fonte grande e muitos animais em aparelho físico; tirar as capturas de tela.
+mapa com fonte grande e muitos animais em aparelho físico.
 
 ---
 

@@ -35,6 +35,18 @@ Quem cuida de animais de rua costuma guardar tudo de cabeça: onde o bichinho fi
 | 🔒 **Privacidade** | Não pede GPS; fotos e dados ficam só no aparelho |
 | ℹ️ **Como funciona** | Tela de instruções para novos voluntários |
 
+## 📸 Telas
+
+> Capturas do app rodando num emulador Android, com **dados de demonstração** (animais fictícios em bairros de João Pessoa – PB). As fotos dos cachorros são de domínio público (CC0); veja os [créditos](docs/screenshots/CREDITOS.md).
+
+| Mapa | Cartão do animal | Adicionar animal |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/01-mapa.jpg" width="230" alt="Mapa com alfinetes de cães e gatos em João Pessoa"> | <img src="docs/screenshots/02-cartao-do-animal.jpg" width="230" alt="Cartão de resumo do cachorro Caramelo sobre o mapa"> | <img src="docs/screenshots/03-adicionar-animal.jpg" width="230" alt="Modo de posicionamento com alfinete central"> |
+
+| Lista | Perfil | Cuidados | Informações |
+|:---:|:---:|:---:|:---:|
+| <img src="docs/screenshots/04-lista.jpg" width="170" alt="Lista de animais com fotos"> | <img src="docs/screenshots/05-perfil.jpg" width="170" alt="Perfil do animal com seções em cartões"> | <img src="docs/screenshots/06-cuidados.jpg" width="170" alt="Histórico de cuidados do animal"> | <img src="docs/screenshots/07-informacoes.jpg" width="170" alt="Tela Como funciona o app"> |
+
 ## 🏗️ Arquitetura em uma imagem
 
 ```mermaid
@@ -142,7 +154,7 @@ test/                     # espelha lib/
 - [x] Fase 4 — Perfil e edição
 - [x] Fase 5 — Cuidados e histórico
 - [x] Fase 7 — Redesign (mapa e telas modernos e interativos) e correção do crash do perfil, após rodar o app no emulador
-- [ ] Fase 6 — Informações, acessibilidade e entrega *(382 testes, acessibilidade medida e documentação prontos; o app já rodou no emulador; faltam `integration_test` e TalkBack em aparelho, capturas de tela, APK de release e os slides)*
+- [ ] Fase 6 — Informações, acessibilidade e entrega *(382 testes, acessibilidade medida e documentação prontos; o app já rodou no emulador e as capturas de tela estão no README; faltam `integration_test` e TalkBack em aparelho, APK de release e os slides)*
 
 Detalhes em [docs/08-plano-de-desenvolvimento.md](docs/08-plano-de-desenvolvimento.md).
 
