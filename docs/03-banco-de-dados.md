@@ -45,6 +45,7 @@ erDiagram
     text notes
     text medication_name "só medication"
     text health_kind "só health"
+    text description "só health"
     text created_at "ISO-8601 UTC"
   }
 ```
@@ -95,6 +96,7 @@ erDiagram
 | `notes` | TEXT | sim | Observação opcional. |
 | `medication_name` | TEXT | sim | Obrigatório se `type = 'medication'` (RN-06, também por `CHECK`). |
 | `health_kind` | TEXT | sim | Obrigatório se `type = 'health'`: `consultation`, `procedure`, `vaccine`, `injuryTreatment`, `general`. |
+| `description` | TEXT | sim | Descrição do atendimento/procedimento; obrigatória (validada no domínio) quando `type = 'health'`. Adicionada pela **migração 002**. |
 | `created_at` | TEXT | não | **Quando foi lançado** no app (pode diferir de `occurred_at`). |
 
 > **`occurred_at` × `created_at`:** o primeiro é o fato; o segundo, o lançamento. A tela ordena e destaca por `occurred_at`.
@@ -142,6 +144,7 @@ Toda consulta usa **parâmetros** (`?`/`whereArgs`), nunca concatenação de tex
 | Versão | Descrição | Arquivo |
 |:------:|-----------|---------|
 | 1 | Esquema inicial (`pets`, `care_records`, índices) | `migration_001_initial.dart` |
+| 2 | Coluna `description` em `care_records` (registro de saúde) | `migration_002_care_description.dart` |
 
 Regras:
 1. `AppDatabase.open` usa `version = migrations.length`.

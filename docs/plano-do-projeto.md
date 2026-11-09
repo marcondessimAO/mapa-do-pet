@@ -414,7 +414,7 @@ lib/
 │   │       └── widgets/{pet_card, tri_state_selector, pet_form_view, profile_section, adoption_banner, species_filter_bar}.dart
 │   ├── care/
 │   │   ├── domain/{entities/care_record.dart, entities/care_summary.dart, enums/health_record_kind.dart,
-│   │   │          repositories/care_repository.dart, usecases/add_care_record.dart}
+│   │   │          repositories/care_repository.dart, usecases/add_care_record.dart, validators/care_record_validator.dart}
 │   │   ├── data/{datasources, mappers/care_record_mapper.dart, repositories/care_repository_impl.dart}
 │   │   └── presentation/{viewmodels/care_viewmodel.dart, widgets/{care_section, last_care_highlight, care_record_tile, care_record_form_sheet}.dart}
 │   ├── map/

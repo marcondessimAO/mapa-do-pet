@@ -3,6 +3,10 @@ import 'package:flutter_map/flutter_map.dart'
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
+import '../../features/care/data/datasources/care_local_datasource.dart';
+import '../../features/care/data/repositories/care_repository_impl.dart';
+import '../../features/care/domain/repositories/care_repository.dart';
+import '../../features/care/domain/usecases/add_care_record.dart';
 import '../../features/map/presentation/viewmodels/map_viewmodel.dart';
 import '../../features/pets/data/datasources/pet_local_datasource.dart';
 import '../../features/pets/data/repositories/pet_repository_impl.dart';
@@ -52,7 +56,22 @@ List<SingleChildWidget> buildAppProviders({
       Provider<GetPets>(
           create: (context) => GetPets(context.read<PetRepository>())),
       Provider<GetPetProfile>(
-          create: (context) => GetPetProfile(context.read<PetRepository>())),
+          create: (context) => GetPetProfile(
+                context.read<PetRepository>(),
+                context.read<CareRepository>(),
+              )),
+
+      // Cuidados: dados e casos de uso (só acrescentam; nunca alteram o histórico)
+      Provider<CareRepository>(
+        create: (context) => CareRepositoryImpl(
+          CareLocalDataSource(context.read<AppDatabase>()),
+          systemNow,
+        ),
+      ),
+      Provider<AddCareRecord>(
+        create: (context) =>
+            AddCareRecord(context.read<CareRepository>(), systemNow),
+      ),
 
       // Pets: ViewModel da lista (também recarregado após cadastrar)
       ChangeNotifierProvider<PetListViewModel>(
@@ -63,6 +82,4 @@ List<SingleChildWidget> buildAppProviders({
       ChangeNotifierProvider<MapViewModel>(
         create: (context) => MapViewModel(context.read<GetPets>())..load(),
       ),
-
-      // TODO(T5-3): CareRepository -> CareRepositoryImpl(CareLocalDataSource(database))
     ];

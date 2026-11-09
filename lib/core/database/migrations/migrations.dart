@@ -1,8 +1,9 @@
 import 'package:sqflite/sqflite.dart';
 
 import 'migration_001_initial.dart';
+import 'migration_002_care_description.dart';
 
 typedef Migration = Future<void> Function(Database db);
 
 /// Lista ordenada. A versão do banco é `migrations.length`.
-const List<Migration> migrations = [migration001];
+const List<Migration> migrations = [migration001, migration002];

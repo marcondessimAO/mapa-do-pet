@@ -8,6 +8,7 @@ import 'package:mapa_do_pet/features/pets/domain/usecases/get_pet_profile.dart';
 import 'package:mapa_do_pet/features/pets/presentation/viewmodels/pet_profile_viewmodel.dart';
 
 import '../../../support/fake_image_picker.dart';
+import '../../../support/fake_care_repository.dart';
 import '../../../support/fake_pet_repository.dart';
 import '../../../support/pet_builder.dart';
 
@@ -24,7 +25,7 @@ void main() {
 
   PetProfileViewModel buildVm([String id = 'pet-1']) => PetProfileViewModel(
         petId: id,
-        getPetProfile: GetPetProfile(repository),
+        getPetProfile: GetPetProfile(repository, FakeCareRepository()),
         deletePet: DeletePet(repository),
         imageStorage: images.service,
       );

@@ -3,6 +3,10 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mapa_do_pet/core/services/image_storage_service.dart';
 import 'package:mapa_do_pet/core/theme/app_theme.dart';
+import 'package:mapa_do_pet/core/utils/clock.dart';
+import 'package:mapa_do_pet/features/care/domain/entities/care_record.dart';
+import 'package:mapa_do_pet/features/care/domain/enums/health_record_kind.dart';
+import 'package:mapa_do_pet/features/care/domain/usecases/add_care_record.dart';
 import 'package:mapa_do_pet/features/pets/domain/entities/pet.dart';
 import 'package:mapa_do_pet/features/pets/domain/enums/pet_age_group.dart';
 import 'package:mapa_do_pet/features/pets/domain/enums/pet_sex.dart';
@@ -16,6 +20,7 @@ import 'package:mapa_do_pet/features/pets/presentation/widgets/adoption_banner.d
 import 'package:provider/provider.dart';
 
 import '../../../support/blank_tile_provider.dart';
+import '../../../support/fake_care_repository.dart';
 import '../../../support/fake_image_picker.dart';
 import '../../../support/fake_pet_repository.dart';
 import '../../../support/pet_builder.dart';
@@ -31,10 +36,15 @@ Pet samplePet(
   );
 }
 
-Widget app(FakePetRepository repository) {
+Widget app(FakePetRepository repository, {FakeCareRepository? care}) {
+  final careRepository = care ?? FakeCareRepository();
   return MultiProvider(
     providers: [
-      Provider<GetPetProfile>.value(value: GetPetProfile(repository)),
+      Provider<GetPetProfile>.value(
+        value: GetPetProfile(repository, careRepository),
+      ),
+      Provider<AddCareRecord>.value(
+          value: AddCareRecord(careRepository, systemNow)),
       Provider<DeletePet>.value(value: DeletePet(repository)),
       Provider<UpdatePet>.value(
         value: UpdatePet(repository, () => DateTime.utc(2025, 6, 1)),
@@ -59,10 +69,13 @@ Widget app(FakePetRepository repository) {
 }
 
 Future<void> openProfile(
-    WidgetTester tester, FakePetRepository repository) async {
+  WidgetTester tester,
+  FakePetRepository repository, {
+  FakeCareRepository? care,
+}) async {
   await tester.binding.setSurfaceSize(const Size(800, 3600));
   addTearDown(() => tester.binding.setSurfaceSize(null));
-  await tester.pumpWidget(app(repository));
+  await tester.pumpWidget(app(repository, care: care));
   await tester.tap(find.text('abrir'));
   await tester.pumpAndSettle();
 }
@@ -188,6 +201,98 @@ void main() {
     expect(find.text('Thor'), findsOneWidget);
     expect(find.text('Informações atualizadas!'), findsOneWidget);
     expect(repository.store['pet-1']!.name, 'Thor');
+  });
+
+  testWidgets('shows the last feeding and bath from the care history (RF-13)',
+      (tester) async {
+    final repository = FakePetRepository()..store['pet-1'] = samplePet();
+    final care = FakeCareRepository()
+      ..store.addAll([
+        FeedingRecord(
+          id: 'f',
+          petId: 'pet-1',
+          occurredAt: DateTime(2025, 3, 12, 8, 30).toUtc(),
+          hasTime: true,
+        ),
+        BathRecord(
+          id: 'b',
+          petId: 'pet-1',
+          occurredAt: DateTime(2025, 3, 2).toUtc(),
+        ),
+      ]);
+
+    await openProfile(tester, repository, care: care);
+
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('last-feeding')),
+        matching: find.text('12/03/2025 às 08:30'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('last-bath')),
+        matching: find.text('02/03/2025'),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('adding a feeding updates the highlight (RF-12, RF-13)',
+      (tester) async {
+    final repository = FakePetRepository()..store['pet-1'] = samplePet();
+    final care = FakeCareRepository();
+    await openProfile(tester, repository, care: care);
+    const empty = 'Ainda sem registro';
+    final feedingEmpty = find.descendant(
+      of: find.byKey(const ValueKey('last-feeding')),
+      matching: find.text(empty),
+    );
+    expect(feedingEmpty, findsOneWidget);
+
+    await tester.ensureVisible(find.text('Adicionar registro'));
+    await tester.tap(find.text('Adicionar registro'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(ListTile, 'Alimentação'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Salvar registro'));
+    await tester.pumpAndSettle();
+
+    expect(care.store.single.petId, 'pet-1');
+    expect(find.text('Registro salvo!'), findsOneWidget);
+    expect(feedingEmpty, findsNothing);
+  });
+
+  testWidgets('summarizes the health records in the medical section',
+      (tester) async {
+    final repository = FakePetRepository()..store['pet-1'] = samplePet();
+    final care = FakeCareRepository()
+      ..store.add(HealthRecord(
+        id: 'h',
+        petId: 'pet-1',
+        occurredAt: DateTime(2025, 3, 7, 10).toUtc(),
+        kind: HealthRecordKind.vaccine,
+        description: 'V10, primeira dose',
+      ));
+
+    await openProfile(tester, repository, care: care);
+
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('row-health-history')),
+        matching: find.text('07/03/2025 — Vacina: V10, primeira dose'),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('without health records the history says so', (tester) async {
+    final repository = FakePetRepository()..store['pet-1'] = samplePet();
+
+    await openProfile(tester, repository);
+
+    expect(find.text('Nenhum atendimento registrado'), findsOneWidget);
   });
 
   group('removing the pet', () {

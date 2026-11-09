@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 
 import '../../../support/blank_tile_provider.dart';
 import '../../../support/fake_image_picker.dart';
+import '../../../support/fake_care_repository.dart';
 import '../../../support/fake_pet_repository.dart';
 import '../../../support/pet_builder.dart';
 
@@ -32,7 +33,8 @@ Widget app(
     providers: [
       Provider<TileProvider>.value(value: tiles ?? BlankTileProvider()),
       Provider<RegisterPet>.value(value: RegisterPet(repository)),
-      Provider<GetPetProfile>.value(value: GetPetProfile(repository)),
+      Provider<GetPetProfile>.value(
+          value: GetPetProfile(repository, FakeCareRepository())),
       Provider<DeletePet>.value(value: DeletePet(repository)),
       Provider<UpdatePet>.value(
         value: UpdatePet(repository, () => DateTime.utc(2025, 6, 1)),
