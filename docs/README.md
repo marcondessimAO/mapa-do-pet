@@ -14,6 +14,7 @@ Este diretório reúne toda a documentação técnica do projeto. A ordem abaixo
 | 07 | [Guia de contribuição](07-guia-de-contribuicao.md) | Git, commits, revisão, Definition of Done |
 | 08 | [Plano de desenvolvimento](08-plano-de-desenvolvimento.md) | Backlog por fase, tarefas, ordem TDD e status |
 | 09 | [Decisões de arquitetura (ADR)](09-decisoes-arquitetura-adr.md) | Por que cada escolha técnica foi feita |
+| 10 | [Roteiro de apresentação](10-roteiro-de-apresentacao.md) | Slides, demonstração passo a passo e perguntas prováveis |
 
 ## 🧩 Diagramas UML (`uml/`)
 

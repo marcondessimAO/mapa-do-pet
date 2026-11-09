@@ -85,3 +85,20 @@ dart format --set-exit-if-changed .  # formatação
 
 ## 8. Critérios de saída de uma fase
 Testes da fase verdes · `flutter analyze` sem avisos · cobertura da fase ≥ 80 % nas camadas-alvo · nenhum teste ignorado (`skip`) sem justificativa registrada.
+
+## 9. Estado final (Fase 6)
+
+| Camada | Cobertura | Observação |
+|--------|:---------:|------------|
+| Domínio + dados | 99,1 % | Inclui migrações, mappers, repositórios e SQLite real em memória |
+| ViewModels | 95,2 % | |
+| UI (páginas e widgets) | 92,8 % | A folha de cuidados fica em 74 %: os seletores nativos de data/hora não são exercitados |
+| **`lib/` inteiro** | **94,7 %** | 369 testes, `flutter analyze` sem avisos |
+
+Além dos testes por camada:
+
+- **Fluxo completo** (`test/integration/app_flow_test.dart`): SQLite real em arquivo, com o app "fechado e reaberto" no meio. Cobre persistência, edição preservando o histórico, remoção em cascata e idempotência.
+- **Acessibilidade** (`test/accessibility/`): fonte a 200 %, alvos de toque, rótulos e contraste.
+- **Contraste da paleta** (`test/core/theme/contrast_test.dart`).
+
+**Não coberto (precisa de aparelho):** `integration_test` em emulador, TalkBack/VoiceOver e o comportamento real do mapa com a rede.

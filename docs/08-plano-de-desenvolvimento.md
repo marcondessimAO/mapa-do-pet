@@ -22,9 +22,9 @@ Detalha as 7 fases do [plano do projeto §14](plano-do-projeto.md#14-plano-de-de
 | **Fase 3 — mapa** (T3-1…T3-7) | ✅ | Tiles OSM com atribuição, marcadores SVG, filtro, enquadramento sem GPS, toque → confirmação → cadastro, resumo do marcador, mini-mapa no cadastro, aviso offline; 209 testes |
 | **Fase 4 — perfil e edição** (T4-1…T4-4) | ✅ | Perfil com seções A, B, C, E e F, edição que preserva o histórico, vacinação antirrábica, remoção com confirmação, foto trocada/removida com limpeza segura; lista e mapa abrem o perfil; 249 testes |
 | **Fase 5 — cuidados e histórico** (T5-1…T5-7) | ✅ | Registros de alimentação, banho, medicamento e saúde (só acrescentam), migração 002, destaques da última alimentação/banho, histórico por tipo, resumo de saúde no perfil; 326 testes |
-| Fase 6 — informações e acabamento | ⬜ | Próxima |
+| **Fase 6 — informações e acabamento** | 🟡 | Tudo o que dá para verificar sem aparelho está pronto (acessibilidade medida, fluxo com reabertura do banco, atribuição do OSM com link, roteiro). Faltam emulador/aparelho, APK e slides |
 
-> ✅ **Fases 0 a 5 concluídas** (exceto T0-6 e T0-9, e o teste em emulador de T0-1/T0-5, que dependem do grupo e de um aparelho). Próximo passo: **Fase 6**. O app ainda não foi aberto em emulador (sem Android SDK): a interface foi validada por testes de widget.
+> ✅ **Fases 0 a 5 concluídas** e **Fase 6 em grande parte** (ver o status abaixo). O que resta depende de um **emulador ou aparelho Android** (testar a interface de verdade, `integration_test`, APK e capturas de tela) e de decisões do grupo (T0-6 fluxo Git, T0-9 centro do mapa).
 
 ## 1. Visão geral das fases
 
@@ -164,6 +164,16 @@ Após a Fase 1, **Fase 2 (pets)**, **Fase 5 (cuidados — camadas domain/data)**
 | T6-5 | Build de release (APK), vídeo/roteiro de demonstração, slides | M | T6-2 | — |
 
 **Saída:** todos os itens do [plano §15](plano-do-projeto.md#15-critérios-de-aceite-do-mvp) marcados.
+
+**Status da Fase 6** (o que foi feito e o que depende de aparelho):
+
+| Tarefa | Status | Observação |
+|--------|:------:|------------|
+| T6-1 Acessibilidade | ✅ | Fonte a 200 %, alvos ≥ 48 dp, rótulos e contraste **medidos por testes** (ver [05 §7](05-interface-e-design.md#7-verificação-de-acessibilidade-medida)). **Falta** testar com TalkBack/VoiceOver em aparelho. |
+| T6-2 Fluxo completo | 🟡 | Feito como teste comum (`test/integration/app_flow_test.dart`): SQLite real em arquivo, cadastrar → listar → cuidados → editar → **fechar e reabrir o banco** → remover. **Falta** o `integration_test` em emulador/aparelho. |
+| T6-3 Cobertura e análise | ✅ | 369 testes; `lib/` 94,7 % (domain+data 99,1 %, ViewModels 95,2 %, UI 92,8 %); `flutter analyze` limpo; único `TODO` é a decisão em aberto do centro do mapa. |
+| T6-4 Documentação | 🟡 | Docs, UML e README sincronizados com o código. **Faltam** as capturas de tela do README (exigem emulador). |
+| T6-5 Entrega | 🟡 | Roteiro e slides sugeridos em [10](10-roteiro-de-apresentacao.md). **Faltam** o APK de release (exige Android SDK), o vídeo/demonstração e os slides prontos. |
 
 ---
 

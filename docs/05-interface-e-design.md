@@ -185,3 +185,29 @@ Escala de **4 dp** (4·8·12·16·24·32). Margem de tela 16 dp. Raio de cartõe
 | Gato | Patinha com cabeça de orelhas pontudas | Marrom | `assets/markers/cat.svg` |
 
 Tamanho 40×40 dp, com contorno branco de 2 dp para destacar sobre qualquer fundo do mapa.
+
+## 7. Verificação de acessibilidade (medida)
+
+**Contraste da paleta** (fórmula WCAG; verificado em `test/core/theme/contrast_test.dart`):
+
+| Par | Razão | Uso permitido |
+|-----|:-----:|---------------|
+| Marrom / Branco | 10,95:1 | Qualquer texto (AAA) |
+| Marrom / Areia | 6,78:1 | Qualquer texto (AA) |
+| Erro / Branco | 6,43:1 | Texto de erro (AA) |
+| Branco / Caramelo | 3,52:1 | Só texto **grande ou negrito** (rótulo de botão ≥ 16 sp, w700) |
+| Marrom / Caramelo | 3,11:1 | Ícones e texto grande |
+
+Por isso o Caramelo **nunca** é cor de texto corrido; o tema fixa o rótulo dos botões em 16 sp negrito.
+
+**Testes automatizados** (`test/accessibility/accessibility_test.dart`), em celular de 360 dp:
+
+| Verificação | Telas cobertas | Resultado |
+|-------------|----------------|-----------|
+| Fonte a **200 %** sem estouro de layout | Mapa, Animais, Informações, Navegação, Perfil, Cadastro, Registro de cuidado | Passa |
+| Alvos de toque ≥ 48 dp (`androidTapTargetGuideline`) | as 7 telas | Passa |
+| Controles com rótulo (`labeledTapTargetGuideline`) | as 7 telas | Passa |
+| Contraste do texto renderizado (`textContrastGuideline`) | Animais, Informações, Perfil | Passa |
+| Mapa anunciado a leitores de tela | Mapa | Passa |
+
+**Ainda não verificado:** uso real com **TalkBack/VoiceOver** em aparelho. Os testes acima medem regras, não a experiência de quem usa leitor de tela.

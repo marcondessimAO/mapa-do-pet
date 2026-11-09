@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/app_constants.dart';
 import '../theme/app_colors.dart';
@@ -29,18 +32,52 @@ class OsmTileLayer extends StatelessWidget {
   }
 }
 
-/// Crédito do OpenStreetMap, sempre visível (exigência da política de uso).
+/// Abre um endereço fora do app. Injetável para os testes não abrirem nada.
+typedef UrlLauncher = Future<bool> Function(Uri uri);
+
+Future<bool> _launchInBrowser(Uri uri) =>
+    launchUrl(uri, mode: LaunchMode.externalApplication);
+
+/// Crédito do OpenStreetMap, sempre visível, com link para a página de
+/// copyright (exigência da política de uso). A área de toque tem ~48 dp e o
+/// widget é anunciado como link para leitores de tela.
 class OsmAttribution extends StatelessWidget {
-  const OsmAttribution({super.key});
+  const OsmAttribution({this.launcher = _launchInBrowser, super.key});
+
+  static final Uri copyrightUri =
+      Uri.parse('https://www.openstreetmap.org/copyright');
+
+  final UrlLauncher launcher;
 
   @override
   Widget build(BuildContext context) {
-    return const SimpleAttributionWidget(
-      backgroundColor: Color(0xCCFFFDF9),
-      source: Text(
-        '© OpenStreetMap contributors',
-        style: TextStyle(fontSize: 11, color: AppColors.marrom),
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Semantics(
+        link: true,
+        child: Material(
+          color: const Color(0xCCFFFDF9),
+          borderRadius: const BorderRadius.only(topLeft: Radius.circular(8)),
+          child: InkWell(
+            onTap: () => unawaited(_open()),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+              child: Text(
+                '© OpenStreetMap contributors',
+                style: TextStyle(fontSize: 11, color: AppColors.marrom),
+              ),
+            ),
+          ),
+        ),
       ),
     );
+  }
+
+  Future<void> _open() async {
+    try {
+      await launcher(copyrightUri);
+    } catch (_) {
+      // Sem navegador disponível: o crédito continua visível, só não abre.
+    }
   }
 }

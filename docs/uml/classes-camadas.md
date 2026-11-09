@@ -94,11 +94,12 @@ classDiagram
     +bool isSaving
     +add(CareRecord) Future
   }
+  class CareRecordValidator {
+    <<validator>>
+    +validate(CareRecord, DateTime now)$ List~ValidationFailure~
+  }
   class AddCareRecord {
     +call(CareRecord) Future~Result~CareRecord~~
-  }
-  class GetCareSummary {
-    +call(String petId) Future~Result~CareSummary~~
   }
   class CareRepository {
     <<interface>>
@@ -113,8 +114,8 @@ classDiagram
   }
 
   CareViewModel ..> AddCareRecord
+  AddCareRecord ..> CareRecordValidator
   AddCareRecord ..> CareRepository
-  GetCareSummary ..> CareRepository
   CareRepository <|.. CareRepositoryImpl
   CareRepositoryImpl --> CareLocalDataSource
   CareRepositoryImpl ..> CareRecordMapper
