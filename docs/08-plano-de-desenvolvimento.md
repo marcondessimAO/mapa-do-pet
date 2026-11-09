@@ -20,9 +20,10 @@ Detalha as 7 fases do [plano do projeto §14](plano-do-projeto.md#14-plano-de-de
 | **Fase 1 — domínio e dados de `pets`** (T1-1…T1-7) | ✅ | Validador, filtros, mapper, datasource, repositório SQLite, use cases e DI |
 | **Fase 2 — cadastro e lista** (T2-1…T2-7) | ✅ | Serviço de fotos, rótulos, `TriStateSelector`, `PetFormViewModel`, `PetListViewModel`, páginas de cadastro e lista; 161 testes, ViewModels ≈ 90 % |
 | **Fase 3 — mapa** (T3-1…T3-7) | ✅ | Tiles OSM com atribuição, marcadores SVG, filtro, enquadramento sem GPS, toque → confirmação → cadastro, resumo do marcador, mini-mapa no cadastro, aviso offline; 209 testes |
-| Fase 4 — perfil e edição | ⬜ | Próxima |
+| **Fase 4 — perfil e edição** (T4-1…T4-4) | ✅ | Perfil com seções A, B, C, E e F, edição que preserva o histórico, vacinação antirrábica, remoção com confirmação, foto trocada/removida com limpeza segura; lista e mapa abrem o perfil; 249 testes |
+| Fase 5 — cuidados e histórico | ⬜ | Próxima |
 
-> ✅ **Fases 0 a 3 concluídas** (exceto T0-6 e T0-9, e o teste em emulador de T0-1/T0-5, que dependem do grupo e de um aparelho). Próximo passo: **Fase 4**. O app ainda não foi aberto em emulador (sem Android SDK): a interface foi validada por testes de widget.
+> ✅ **Fases 0 a 4 concluídas** (exceto T0-6 e T0-9, e o teste em emulador de T0-1/T0-5, que dependem do grupo e de um aparelho). Próximo passo: **Fase 5**. O app ainda não foi aberto em emulador (sem Android SDK): a interface foi validada por testes de widget.
 
 ## 1. Visão geral das fases
 
@@ -126,10 +127,10 @@ Após a Fase 1, **Fase 2 (pets)**, **Fase 5 (cuidados — camadas domain/data)**
 
 | ID | Tarefa | Tam. | Depende | Req. |
 |----|--------|:----:|---------|------|
-| T4-1 | `GetPetProfile` (pet + `CareSummary` vazio por enquanto) e `PetProfileViewModel` | M | T1-6 | RF-09 |
-| T4-2 | `PetProfilePage`: seções A, B, C, E, F; `AdoptionBanner`; "Não informado" para ausentes | G | T4-1 | RF-09 |
-| T4-3 | `PetEditPage` reutilizando o formulário; troca de foto (apaga a antiga só após sucesso) | G | T2-5 | RF-10, RF-11 |
-| T4-4 | Remover animal: diálogo de confirmação, cascata e remoção da foto | M | T4-2 | RF-16 |
+| T4-1 ✅ | `GetPetProfile` (pet + `CareSummary` vazio por enquanto; a Fase 5 passa a preenchê-lo) e `PetProfileViewModel` | M | T1-6 | RF-09 |
+| T4-2 ✅ | `PetProfilePage`: seções A, B, C, E, F; `AdoptionBanner`; "Não informado" para ausentes | G | T4-1 | RF-09 |
+| T4-3 ✅ | `PetEditPage` reutilizando o formulário (`PetFormView` compartilhado, com a seção "Informações médicas" só na edição); troca de foto (apaga a antiga só após sucesso) | G | T2-5 | RF-10, RF-11 |
+| T4-4 ✅ | Remover animal: diálogo de confirmação, cascata e remoção da foto | M | T4-2 | RF-16 |
 
 **Saída:** consultar, editar e remover; teste de integração de dados confirma que editar preserva histórico.
 

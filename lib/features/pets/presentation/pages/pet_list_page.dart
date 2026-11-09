@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import '../../domain/entities/pet.dart';
 import '../viewmodels/pet_list_viewmodel.dart';
 import '../widgets/pet_card.dart';
 import '../widgets/species_filter_bar.dart';
+import 'pet_profile_page.dart';
 
 /// Lista de animais com busca por nome/região e filtro de espécie (RF-08).
 /// O cadastro começa pelo toque no mapa, então esta tela só consulta.
@@ -67,6 +69,7 @@ class _Body extends StatelessWidget {
           itemBuilder: (context, index) => PetCard(
             pet: data[index],
             photoFile: _photoOf(context, data[index]),
+            onTap: () => unawaited(_openProfile(context, data[index])),
           ),
         ),
       Failed(:final failure) =>
@@ -88,6 +91,14 @@ class _Body extends StatelessWidget {
           ? 'Nenhum animal nesta categoria.'
           : 'Nada encontrado para “$query”.',
     );
+  }
+
+  /// Abre o perfil e, ao voltar, recarrega a lista (o animal pode ter sido
+  /// editado ou removido).
+  Future<void> _openProfile(BuildContext context, Pet pet) async {
+    final list = context.read<PetListViewModel>();
+    await PetProfilePage.open(context, pet.id);
+    await list.load();
   }
 
   File? _photoOf(BuildContext context, Pet pet) {

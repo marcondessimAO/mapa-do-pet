@@ -398,7 +398,7 @@ lib/
 ├── features/
 │   ├── pets/
 │   │   ├── domain/
-│   │   │   ├── entities/{pet.dart, pet_location.dart}
+│   │   │   ├── entities/{pet.dart, pet_location.dart, pet_profile.dart}
 │   │   │   ├── enums/{pet_species, pet_sex, pet_age_group, pet_size, tri_state}.dart
 │   │   │   ├── filters/pet_filter.dart      # PetFilter + SpeciesFilter + TextSearchFilter + CompositePetFilter
 │   │   │   ├── validators/pet_validator.dart
@@ -411,7 +411,7 @@ lib/
 │   │   └── presentation/
 │   │       ├── viewmodels/{pet_list_viewmodel, pet_form_viewmodel, pet_profile_viewmodel}.dart
 │   │       ├── pages/{pet_list_page, pet_registration_page, pet_profile_page, pet_edit_page}.dart
-│   │       └── widgets/{pet_card, tri_state_selector, pet_form_sections, adoption_banner}.dart
+│   │       └── widgets/{pet_card, tri_state_selector, pet_form_view, profile_section, adoption_banner, species_filter_bar}.dart
 │   ├── care/
 │   │   ├── domain/{entities/care_record.dart, entities/care_summary.dart, enums/health_record_kind.dart,
 │   │   │          repositories/care_repository.dart, usecases/add_care_record.dart}

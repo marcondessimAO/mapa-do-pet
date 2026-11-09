@@ -12,6 +12,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/osm_tile_layer.dart';
 import '../../../pets/domain/entities/pet.dart';
 import '../../../pets/domain/entities/pet_location.dart';
+import '../../../pets/presentation/pages/pet_profile_page.dart';
 import '../../../pets/presentation/pages/pet_registration_page.dart';
 import '../../../pets/presentation/widgets/species_filter_bar.dart';
 import '../viewmodels/map_viewmodel.dart';
@@ -168,11 +169,25 @@ class _MapPageState extends State<MapPage> {
     final name = pet.photoFileName;
     final photo =
         name == null ? null : context.read<ImageStorageService>().fileFor(name);
-    // TODO(T4-2): passar onOpenProfile quando o perfil do animal existir.
     return showModalBottomSheet<void>(
       context: context,
-      builder: (_) => PetSummarySheet(pet: pet, photoFile: photo),
+      builder: (sheetContext) => PetSummarySheet(
+        pet: pet,
+        photoFile: photo,
+        onOpenProfile: () {
+          Navigator.of(sheetContext).pop();
+          unawaited(_openProfile(pet));
+        },
+      ),
     );
+  }
+
+  /// Abre o perfil e, ao voltar, recarrega os marcadores (o animal pode ter
+  /// sido editado ou removido).
+  Future<void> _openProfile(Pet pet) async {
+    final map = context.read<MapViewModel>();
+    await PetProfilePage.open(context, pet.id);
+    await map.load();
   }
 
   Future<void> _askToRegister(LatLng point) async {

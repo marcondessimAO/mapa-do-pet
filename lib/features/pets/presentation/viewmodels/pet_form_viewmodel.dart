@@ -15,49 +15,107 @@ import '../../domain/enums/pet_size.dart';
 import '../../domain/enums/pet_species.dart';
 import '../../domain/enums/tri_state.dart';
 import '../../domain/usecases/register_pet.dart';
+import '../../domain/usecases/update_pet.dart';
 
-/// Estado do formulário de cadastro.
+/// Estado do formulário do animal, para **cadastrar** ou **editar**.
 ///
-/// O `id` do animal é gerado **ao abrir** o formulário e [save] ignora toques
-/// repetidos, então salvar duas vezes nunca duplica o animal (RN-09).
+/// O `id` é gerado **ao abrir** o formulário de cadastro e [save] ignora toques
+/// repetidos, então salvar duas vezes nunca duplica o animal (RN-09). Na edição
+/// o `id` e o `createdAt` do animal são mantidos, e uma foto trocada só tem o
+/// arquivo antigo apagado **depois** que o salvamento dá certo.
 class PetFormViewModel extends ChangeNotifier {
+  /// Formulário de cadastro, no ponto [location].
   PetFormViewModel({
     required RegisterPet registerPet,
     required ImageStorageService imageStorage,
     required PetLocation location,
     required Now now,
     String Function()? newId,
-  })  : _registerPet = registerPet,
-        _imageStorage = imageStorage,
-        _location = location,
-        _now = now,
-        id = (newId ?? () => const Uuid().v4())();
+  }) : this._(
+          submit: registerPet.call,
+          imageStorage: imageStorage,
+          now: now,
+          id: (newId ?? () => const Uuid().v4())(),
+          location: location,
+        );
 
-  final RegisterPet _registerPet;
+  /// Formulário de edição, já preenchido com os dados de [pet].
+  PetFormViewModel.edit({
+    required UpdatePet updatePet,
+    required ImageStorageService imageStorage,
+    required Pet pet,
+    required Now now,
+  }) : this._(
+          submit: updatePet.call,
+          imageStorage: imageStorage,
+          now: now,
+          id: pet.id,
+          location: pet.location,
+          original: pet,
+        );
+
+  PetFormViewModel._({
+    required Future<Result<Pet>> Function(Pet) submit,
+    required ImageStorageService imageStorage,
+    required Now now,
+    required this.id,
+    required PetLocation location,
+    Pet? original,
+  })  : _submit = submit,
+        _imageStorage = imageStorage,
+        _now = now,
+        _location = location,
+        _original = original,
+        _species = original?.species,
+        _name = original?.name ?? '',
+        _sex = original?.sex ?? PetSex.unknown,
+        _ageGroup = original?.ageGroup ?? PetAgeGroup.unknown,
+        _size = original?.size ?? PetSize.unknown,
+        _appearance = original?.appearance ?? '',
+        _isDocile = original?.isDocile ?? TriState.unknown,
+        _isNeutered = original?.isNeutered ?? TriState.unknown,
+        _isPregnant = original?.isPregnant ?? TriState.unknown,
+        _hasLitter = original?.hasLitter ?? TriState.unknown,
+        _litterSize = original?.litterSize,
+        _hasInjuries = original?.hasInjuries ?? TriState.unknown,
+        _injuryDescription = original?.injuryDescription ?? '',
+        _knownDiseases = original?.knownDiseases ?? '',
+        _rabies = original?.rabiesVaccination ?? TriState.unknown,
+        _otherHealthInfo = original?.otherHealthInfo ?? '',
+        _notes = original?.notes ?? '',
+        _reference = original?.location.reference ?? '',
+        _photoFileName = original?.photoFileName;
+
+  final Future<Result<Pet>> Function(Pet) _submit;
   final ImageStorageService _imageStorage;
-  PetLocation _location;
   final Now _now;
+  final Pet? _original;
 
   /// Identificador do animal, fixo durante toda a vida do formulário.
   final String id;
 
+  PetLocation _location;
   PetSpecies? _species;
-  String _name = '';
-  PetSex _sex = PetSex.unknown;
-  PetAgeGroup _ageGroup = PetAgeGroup.unknown;
-  PetSize _size = PetSize.unknown;
-  String _appearance = '';
-  TriState _isDocile = TriState.unknown;
-  TriState _isNeutered = TriState.unknown;
-  TriState _isPregnant = TriState.unknown;
-  TriState _hasLitter = TriState.unknown;
+  String _name;
+  PetSex _sex;
+  PetAgeGroup _ageGroup;
+  PetSize _size;
+  String _appearance;
+  TriState _isDocile;
+  TriState _isNeutered;
+  TriState _isPregnant;
+  TriState _hasLitter;
   int? _litterSize;
-  TriState _hasInjuries = TriState.unknown;
-  String _injuryDescription = '';
-  String _knownDiseases = '';
-  String _notes = '';
-  String _reference = '';
+  TriState _hasInjuries;
+  String _injuryDescription;
+  String _knownDiseases;
+  TriState _rabies;
+  String _otherHealthInfo;
+  String _notes;
+  String _reference;
   String? _photoFileName;
+
+  /// Foto escolhida nesta sessão e ainda não salva num animal.
   String? _pickedPhoto;
 
   Map<String, String> _errors = const {};
@@ -66,16 +124,25 @@ class PetFormViewModel extends ChangeNotifier {
   bool _isSaving = false;
   Pet? _savedPet;
 
+  bool get isEditing => _original != null;
   PetSpecies? get species => _species;
+  String get name => _name;
   PetSex get sex => _sex;
   PetAgeGroup get ageGroup => _ageGroup;
   PetSize get size => _size;
+  String get appearance => _appearance;
   TriState get isDocile => _isDocile;
   TriState get isNeutered => _isNeutered;
   TriState get isPregnant => _isPregnant;
   TriState get hasLitter => _hasLitter;
   int? get litterSize => _litterSize;
   TriState get hasInjuries => _hasInjuries;
+  String get injuryDescription => _injuryDescription;
+  String get knownDiseases => _knownDiseases;
+  TriState get rabiesVaccination => _rabies;
+  String get otherHealthInfo => _otherHealthInfo;
+  String get notes => _notes;
+  String get reference => _reference;
   String? get photoFileName => _photoFileName;
   PetLocation get location => _location;
 
@@ -163,6 +230,17 @@ class PetFormViewModel extends ChangeNotifier {
     _change(clearing: 'knownDiseases', notify: false);
   }
 
+  /// Vacinação antirrábica: sim / não / desconhecido (RF-11).
+  void setRabies(TriState value) {
+    _rabies = value;
+    _change();
+  }
+
+  void setOtherHealthInfo(String value) {
+    _otherHealthInfo = value;
+    _change(clearing: 'otherHealthInfo', notify: false);
+  }
+
   void setNotes(String value) {
     _notes = value;
     _change(clearing: 'notes', notify: false);
@@ -193,6 +271,8 @@ class PetFormViewModel extends ChangeNotifier {
           final previous = _pickedPhoto;
           _photoFileName = value;
           _pickedPhoto = value;
+          // Só apaga a foto escolhida antes e não salva; a original do animal
+          // fica até o salvamento dar certo.
           if (previous != null) await _imageStorage.delete(previous);
         }
       case Err(:final failure):
@@ -209,7 +289,7 @@ class PetFormViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Valida e cadastra. Devolve `true` se o animal está salvo.
+  /// Valida e salva. Devolve `true` se o animal está salvo.
   Future<bool> save() async {
     if (_savedPet != null) return true;
     if (_isSaving) return false;
@@ -226,11 +306,15 @@ class PetFormViewModel extends ChangeNotifier {
     _generalError = null;
     notifyListeners();
 
-    final result = await _registerPet(_buildPet(species));
+    final result = await _submit(_buildPet(species));
     _isSaving = false;
     switch (result) {
       case Ok(:final value):
         _savedPet = value;
+        final old = _original?.photoFileName;
+        if (old != null && old != value.photoFileName) {
+          await _imageStorage.delete(old);
+        }
       case Err(:final failure):
         _applyFailure(failure);
     }
@@ -268,13 +352,15 @@ class PetFormViewModel extends ChangeNotifier {
       injuryDescription:
           _hasInjuries == TriState.yes ? _clean(_injuryDescription) : null,
       knownDiseases: _clean(_knownDiseases),
+      rabiesVaccination: _rabies,
+      otherHealthInfo: _clean(_otherHealthInfo),
       notes: _clean(_notes),
       location: PetLocation(
         latitude: _location.latitude,
         longitude: _location.longitude,
         reference: _clean(_reference),
       ),
-      createdAt: now,
+      createdAt: _original?.createdAt ?? now,
       updatedAt: now,
     );
   }
