@@ -19,9 +19,10 @@ Detalha as 7 fases do [plano do projeto §14](plano-do-projeto.md#14-plano-de-de
 | Projeto Flutter de plataforma (`android/`, `ios/`) | ✅ | Gerado; permissões `INTERNET` e textos de câmera/galeria configurados |
 | **Fase 1 — domínio e dados de `pets`** (T1-1…T1-7) | ✅ | Validador, filtros, mapper, datasource, repositório SQLite, use cases e DI |
 | **Fase 2 — cadastro e lista** (T2-1…T2-7) | ✅ | Serviço de fotos, rótulos, `TriStateSelector`, `PetFormViewModel`, `PetListViewModel`, páginas de cadastro e lista; 161 testes, ViewModels ≈ 90 % |
-| Fase 3 — mapa | ⬜ | Próxima |
+| **Fase 3 — mapa** (T3-1…T3-7) | ✅ | Tiles OSM com atribuição, marcadores SVG, filtro, enquadramento sem GPS, toque → confirmação → cadastro, resumo do marcador, mini-mapa no cadastro, aviso offline; 209 testes |
+| Fase 4 — perfil e edição | ⬜ | Próxima |
 
-> ✅ **Fases 0, 1 e 2 concluídas** (exceto T0-6 e T0-9, e o teste em emulador de T0-1/T0-5, que dependem do grupo e de um aparelho). Próximo passo: **Fase 3**. O app ainda não foi aberto em emulador (sem Android SDK): a interface foi validada por testes de widget.
+> ✅ **Fases 0 a 3 concluídas** (exceto T0-6 e T0-9, e o teste em emulador de T0-1/T0-5, que dependem do grupo e de um aparelho). Próximo passo: **Fase 4**. O app ainda não foi aberto em emulador (sem Android SDK): a interface foi validada por testes de widget.
 
 ## 1. Visão geral das fases
 
@@ -109,13 +110,13 @@ Após a Fase 1, **Fase 2 (pets)**, **Fase 5 (cuidados — camadas domain/data)**
 
 | ID | Tarefa | Tam. | Depende | Req. |
 |----|--------|:----:|---------|------|
-| T3-1 | `FlutterMap` com tiles OSM, `userAgentPackageName`, atribuição visível | M | T0-5 | RNF-07 |
-| T3-2 | `PetMarker` com SVG cão/gato + `Semantics` | M | T3-1 | RF-01 |
-| T3-3 | `MapViewModel`: carregar pets, filtro de espécie, enquadramento (`LatLngBounds`) ou centro padrão | M | T1-6 | RF-01, RF-02 |
-| T3-4 | Toque em área livre → `ConfirmRegisterSheet` → `/pet/new` com `LatLng` | M | T2-7 | RF-03 |
-| T3-5 | Toque no marcador → `PetSummarySheet` (foto, nome, espécie, botão "Ver perfil") | M | T3-2 | RF-04 |
-| T3-6 | Mini-mapa de ajuste do ponto no formulário | M | T3-1, T2-5 | RF-07 |
-| T3-7 | Aviso de "sem internet" e recarga do mapa ao voltar do cadastro | P | T3-3 | — |
+| T3-1 ✅ | `FlutterMap` com tiles OSM, `userAgentPackageName`, atribuição visível (texto sempre visível; o **link** para openstreetmap.org/copyright fica para a Fase 6, com `url_launcher`) | M | T0-5 | RNF-07 |
+| T3-2 ✅ | `PetMarker` com SVG cão/gato + `Semantics` | M | T3-1 | RF-01 |
+| T3-3 ✅ | `MapViewModel`: carregar pets, filtro de espécie, enquadramento (`LatLngBounds`) ou centro padrão | M | T1-6 | RF-01, RF-02 |
+| T3-4 ✅ | Toque em área livre → `ConfirmRegisterSheet` → `/pet/new` com `LatLng` | M | T2-7 | RF-03 |
+| T3-5 ✅ | Toque no marcador → `PetSummarySheet` (foto, nome, espécie, botão "Ver perfil" — **oculto até a T4-2**, quando o perfil existir) | M | T3-2 | RF-04 |
+| T3-6 ✅ | Mini-mapa de ajuste do ponto no formulário | M | T3-1, T2-5 | RF-07 |
+| T3-7 ✅ | Aviso de "sem internet" e recarga do mapa ao voltar do cadastro | P | T3-3 | — |
 
 **Saída:** cadastro de ponta a ponta pelo mapa; marcador aparece ao salvar.
 

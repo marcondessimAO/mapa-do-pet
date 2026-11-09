@@ -21,6 +21,25 @@ final class PetLocation {
       longitude >= -180 &&
       longitude <= 180;
 
+  /// Cria a localização a partir de um ponto tocado no mapa, que pode vir fora
+  /// do intervalo quando o mapa dá a volta ao mundo: a longitude é "enrolada"
+  /// para -180..180 e a latitude limitada a -90..90. Os valores precisam ser
+  /// números reais (não `NaN`/infinito).
+  factory PetLocation.normalized({
+    required double latitude,
+    required double longitude,
+    String? reference,
+  }) {
+    final wrapped = (longitude >= -180 && longitude <= 180)
+        ? longitude
+        : ((longitude + 180) % 360 + 360) % 360 - 180;
+    return PetLocation(
+      latitude: latitude.clamp(-90.0, 90.0).toDouble(),
+      longitude: wrapped,
+      reference: reference,
+    );
+  }
+
   PetLocation copyWith(
       {double? latitude, double? longitude, String? reference}) {
     return PetLocation(

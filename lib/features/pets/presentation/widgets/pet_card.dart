@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/pet.dart';
-import '../../domain/enums/pet_age_group.dart';
-import '../../domain/enums/pet_sex.dart';
 import '../labels/pet_labels.dart';
 
 /// Cartão de um animal na lista: foto, nome, espécie e só os dados conhecidos.
@@ -19,11 +17,8 @@ class PetCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final details = [
-      if (pet.sex != PetSex.unknown) pet.sex.label,
-      if (pet.ageGroup != PetAgeGroup.unknown) pet.ageGroup.label,
-    ].join(' · ');
-    final reference = pet.location.reference?.trim();
+    final details = pet.detailsLine;
+    final region = pet.regionLine;
 
     return Card(
       color: AppColors.areia,
@@ -35,7 +30,7 @@ class PetCard extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              _Avatar(file: photoFile),
+              PetAvatar(file: photoFile),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -45,8 +40,8 @@ class PetCard extends StatelessWidget {
                     Text(pet.species.label, style: textTheme.bodyMedium),
                     if (details.isNotEmpty)
                       Text(details, style: textTheme.bodyMedium),
-                    if (reference != null && reference.isNotEmpty)
-                      Text(reference, style: textTheme.bodyMedium),
+                    if (region != null)
+                      Text(region, style: textTheme.bodyMedium),
                   ],
                 ),
               ),
@@ -58,17 +53,19 @@ class PetCard extends StatelessWidget {
   }
 }
 
-class _Avatar extends StatelessWidget {
-  const _Avatar({this.file});
+/// Foto redonda do animal; sem foto, mostra uma patinha.
+class PetAvatar extends StatelessWidget {
+  const PetAvatar({this.file, this.radius = 28, super.key});
 
   final File? file;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
     final photo = file;
     final hasPhoto = photo != null && photo.existsSync();
     return CircleAvatar(
-      radius: 28,
+      radius: radius,
       backgroundColor: AppColors.branco,
       backgroundImage: hasPhoto ? FileImage(photo) : null,
       child: hasPhoto ? null : const Icon(Icons.pets, color: AppColors.marrom),

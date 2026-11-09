@@ -35,7 +35,7 @@ class PetFormViewModel extends ChangeNotifier {
 
   final RegisterPet _registerPet;
   final ImageStorageService _imageStorage;
-  final PetLocation _location;
+  PetLocation _location;
   final Now _now;
 
   /// Identificador do animal, fixo durante toda a vida do formulário.
@@ -171,6 +171,17 @@ class PetFormViewModel extends ChangeNotifier {
   void setReference(String value) {
     _reference = value;
     _change(clearing: 'location.reference', notify: false);
+  }
+
+  /// Move o ponto aproximado do animal (RF-07). Ignora valores que não são
+  /// números reais; longitudes fora de ±180 são "enroladas".
+  void setLocation(double latitude, double longitude) {
+    if (!latitude.isFinite || !longitude.isFinite) return;
+    _location = PetLocation.normalized(
+      latitude: latitude,
+      longitude: longitude,
+    );
+    _change();
   }
 
   Future<void> pickPhoto(ImageOrigin origin) async {

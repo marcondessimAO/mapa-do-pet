@@ -112,10 +112,11 @@ void main() {
     expect(find.text('Caramelo'), findsOneWidget);
   });
 
-  testWidgets('has a button to register a new pet', (tester) async {
+  testWidgets('registration starts from the map, not from the list',
+      (tester) async {
     await tester.pumpWidget(app(seeded()));
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip('Cadastrar animal'), findsOneWidget);
+    expect(find.byType(FloatingActionButton), findsNothing);
   });
 }

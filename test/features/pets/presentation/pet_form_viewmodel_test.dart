@@ -156,6 +156,53 @@ void main() {
     });
   });
 
+  group('location', () {
+    test('starts at the point that was tapped on the map', () {
+      final vm = buildVm();
+
+      expect(vm.location.latitude, -15.79);
+      expect(vm.location.longitude, -47.88);
+    });
+
+    test('setLocation moves the point and the saved pet uses it (RF-07)',
+        () async {
+      final vm = buildVm()..setSpecies(PetSpecies.dog);
+      var notified = false;
+      vm.addListener(() => notified = true);
+
+      vm.setLocation(-15.80, -47.90);
+      await vm.save();
+
+      expect(notified, isTrue);
+      expect(vm.savedPet!.location.latitude, -15.80);
+      expect(vm.savedPet!.location.longitude, -47.90);
+    });
+
+    test('setLocation wraps a longitude beyond the date line', () {
+      final vm = buildVm()..setLocation(10, 190);
+
+      expect(vm.location.longitude, closeTo(-170, 1e-9));
+    });
+
+    test('setLocation ignores points that are not real numbers', () {
+      final vm = buildVm()..setLocation(double.nan, 10);
+
+      expect(vm.location.latitude, -15.79);
+      expect(vm.location.longitude, -47.88);
+    });
+
+    test('the reference typed by the user survives moving the point', () async {
+      final vm = buildVm()
+        ..setSpecies(PetSpecies.dog)
+        ..setReference('Praça')
+        ..setLocation(-15.80, -47.90);
+
+      await vm.save();
+
+      expect(vm.savedPet!.location.reference, 'Praça');
+    });
+  });
+
   group('conditional fields', () {
     test('a male never keeps "pregnant = yes" (RN-02)', () {
       final vm = buildVm()

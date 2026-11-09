@@ -4,12 +4,12 @@ import 'package:mapa_do_pet/core/services/image_storage_service.dart';
 import 'package:mapa_do_pet/core/theme/app_theme.dart';
 import 'package:mapa_do_pet/features/pets/domain/entities/pet_location.dart';
 import 'package:mapa_do_pet/features/pets/domain/enums/pet_species.dart';
-import 'package:mapa_do_pet/features/pets/domain/usecases/get_pets.dart';
 import 'package:mapa_do_pet/features/pets/domain/usecases/register_pet.dart';
 import 'package:mapa_do_pet/features/pets/presentation/pages/pet_registration_page.dart';
-import 'package:mapa_do_pet/features/pets/presentation/viewmodels/pet_list_viewmodel.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:provider/provider.dart';
 
+import '../../../support/blank_tile_provider.dart';
 import '../../../support/fake_image_picker.dart';
 import '../../../support/fake_pet_repository.dart';
 
@@ -20,9 +20,7 @@ Widget app(FakePetRepository repository) {
     providers: [
       Provider<RegisterPet>.value(value: RegisterPet(repository)),
       Provider<ImageStorageService>.value(value: widgetTestImageStorage()),
-      ChangeNotifierProvider<PetListViewModel>(
-        create: (_) => PetListViewModel(GetPets(repository)),
-      ),
+      Provider<TileProvider>.value(value: BlankTileProvider()),
     ],
     child: MaterialApp(
       theme: AppTheme.light,
@@ -118,6 +116,30 @@ void main() {
     await tester.pump();
 
     expect(find.text('Quantos filhotes?'), findsOneWidget);
+  });
+
+  testWidgets('tapping the mini-map moves the point and saves it (RF-07)',
+      (tester) async {
+    final repository = FakePetRepository();
+    await openForm(tester, repository);
+
+    final map = find.byType(FlutterMap);
+    await tester.ensureVisible(map);
+    await tester.pumpAndSettle();
+    await tester.tapAt(tester.getCenter(map) + const Offset(80, 0));
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('-47.8800'), findsNothing);
+
+    await tester.tap(find.text('Gato'));
+    await tester.pump();
+    await tester.tap(find.text('Finalizar cadastro'));
+    await tester.pumpAndSettle();
+
+    final saved = repository.store.values.single;
+    expect(saved.location.longitude, greaterThan(-47.88));
+    expect(saved.location.latitude, closeTo(-15.79, 0.01));
   });
 
   testWidgets('shows the approximate coordinates of the chosen point',

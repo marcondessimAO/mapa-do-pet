@@ -28,6 +28,33 @@ void main() {
       expect(PetLocation.isValid(0, -181), isFalse);
     });
 
+    test('normalized wraps longitudes that go around the world', () {
+      final east = PetLocation.normalized(latitude: 10, longitude: 190);
+      final west = PetLocation.normalized(latitude: 10, longitude: -190);
+      final full = PetLocation.normalized(latitude: 10, longitude: 365);
+
+      expect(east.longitude, closeTo(-170, 1e-9));
+      expect(west.longitude, closeTo(170, 1e-9));
+      expect(full.longitude, closeTo(5, 1e-9));
+    });
+
+    test('normalized keeps valid points and the reference unchanged', () {
+      final point = PetLocation.normalized(
+        latitude: -15.79,
+        longitude: -47.88,
+        reference: 'Praça',
+      );
+
+      expect(point.latitude, -15.79);
+      expect(point.longitude, -47.88);
+      expect(point.reference, 'Praça');
+    });
+
+    test('normalized clamps latitude to the poles', () {
+      expect(PetLocation.normalized(latitude: 95, longitude: 0).latitude, 90);
+      expect(PetLocation.normalized(latitude: -95, longitude: 0).latitude, -90);
+    });
+
     test('has value equality', () {
       const a = PetLocation(latitude: 1, longitude: 2, reference: 'Praça');
       const b = PetLocation(latitude: 1, longitude: 2, reference: 'Praça');

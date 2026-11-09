@@ -1,6 +1,9 @@
+import 'package:flutter_map/flutter_map.dart'
+    show NetworkTileProvider, TileProvider;
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
+import '../../features/map/presentation/viewmodels/map_viewmodel.dart';
 import '../../features/pets/data/datasources/pet_local_datasource.dart';
 import '../../features/pets/data/repositories/pet_repository_impl.dart';
 import '../../features/pets/domain/repositories/pet_repository.dart';
@@ -25,6 +28,11 @@ List<SingleChildWidget> buildAppProviders({
       // Infraestrutura
       Provider<AppDatabase>.value(value: database),
       Provider<ImageStorageService>.value(value: imageStorage),
+      // Fundo do mapa (OpenStreetMap); um só para o mapa e o mini-mapa.
+      Provider<TileProvider>(
+        create: (_) => NetworkTileProvider(),
+        dispose: (_, provider) => provider.dispose(),
+      ),
 
       // Pets: dados
       Provider<PetRepository>(
@@ -46,6 +54,11 @@ List<SingleChildWidget> buildAppProviders({
       // Pets: ViewModel da lista (também recarregado após cadastrar)
       ChangeNotifierProvider<PetListViewModel>(
         create: (context) => PetListViewModel(context.read<GetPets>())..load(),
+      ),
+
+      // Mapa: ViewModel dos marcadores (recarregado ao cadastrar e ao abrir a aba)
+      ChangeNotifierProvider<MapViewModel>(
+        create: (context) => MapViewModel(context.read<GetPets>())..load(),
       ),
 
       // TODO(T5-3): CareRepository -> CareRepositoryImpl(CareLocalDataSource(database))
