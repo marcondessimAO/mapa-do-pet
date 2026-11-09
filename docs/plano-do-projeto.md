@@ -535,7 +535,7 @@ Tamanho: P (pequeno) · M (médio) · G (grande). Cada fase só termina com *Def
 
 ## 17. Decisões em aberto (a equipe define)
 
-1. **Centro padrão do mapa:** qual cidade/instituição? (necessário para `AppConstants.defaultMapCenter`).
+1. ✅ **Centro padrão do mapa — decidido:** Centro de João Pessoa – PB (`-7.1195, -34.8450`, Praça da Independência, aproximado), em `AppConstants.defaultMapCenter`.
 2. **Remover animal (RF-16):** manter como *Should* ou cortar? (o original previa "exclusão" no repositório, mas nenhuma tela).
 3. **Corrigir registro de cuidado lançado por engano:** manter *append-only* puro (RN-07) ou permitir remoção do registro (Could)?
 4. **Antirrábica × registro de vacina (RN-11):** manter independentes (padrão) ou sugerir atualizar o status ao lançar vacina?

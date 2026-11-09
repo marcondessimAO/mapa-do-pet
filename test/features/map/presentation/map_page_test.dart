@@ -21,8 +21,8 @@ import '../../../support/fake_pet_repository.dart';
 import '../../../support/pet_builder.dart';
 
 /// Posição do centro padrão do mapa (AppConstants.defaultMapCenter).
-const _centerLat = -15.7939;
-const _centerLng = -47.8828;
+const _centerLat = -7.1195;
+const _centerLng = -34.8450;
 
 Widget app(
   FakePetRepository repository, {
@@ -173,8 +173,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Novo animal'), findsOneWidget);
-    expect(find.textContaining('-15.79'), findsOneWidget);
-    expect(find.textContaining('-47.88'), findsOneWidget);
+    expect(find.textContaining('-7.11'), findsOneWidget);
+    expect(find.textContaining('-34.84'), findsOneWidget);
   });
 
   testWidgets('a pet registered from the map shows up as a marker',
@@ -228,6 +228,17 @@ void main() {
     await tester.tap(find.text('Entendi'));
     await tester.pump();
     expect(find.text(notice), findsNothing);
+  });
+
+  testWidgets('opens on the center of João Pessoa when there are no animals',
+      (tester) async {
+    await pumpMap(tester, app(FakePetRepository()));
+
+    final center =
+        MapCamera.of(tester.element(find.byType(MarkerLayer))).center;
+
+    expect(center.latitude, closeTo(-7.1195, 0.001));
+    expect(center.longitude, closeTo(-34.8450, 0.001));
   });
 
   group('interações do redesign', () {
@@ -373,8 +384,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Novo animal'), findsOneWidget);
-      expect(find.textContaining('-15.79'), findsOneWidget);
-      expect(find.textContaining('-47.88'), findsOneWidget);
+      expect(find.textContaining('-7.11'), findsOneWidget);
+      expect(find.textContaining('-34.84'), findsOneWidget);
     });
   });
 }
