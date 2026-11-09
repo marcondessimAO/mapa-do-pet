@@ -12,9 +12,9 @@ abstract final class AppConstants {
   static const String userAgentPackageName = 'br.edu.mapadopet.mapa_do_pet';
   static const double defaultMapZoom = 14;
 
-  /// Centro do mapa quando não há animais cadastrados (o app não usa GPS).
-  /// TODO(equipe): trocar pela cidade/instituição definida (decisão em aberto #1).
-  static const LatLng defaultMapCenter = LatLng(-15.7939, -47.8828);
+  /// Centro do mapa quando não há animais cadastrados (o app não usa GPS):
+  /// Centro de João Pessoa – PB (Praça da Independência, aproximado).
+  static const LatLng defaultMapCenter = LatLng(-7.1195, -34.8450);
 
   // Limites de validação (RN-03 e RN-13)
   static const int maxNameLength = 60;

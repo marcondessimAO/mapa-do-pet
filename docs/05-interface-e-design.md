@@ -329,7 +329,7 @@ Por isso o Caramelo **nunca** é cor de texto corrido; o tema fixa o rótulo dos
 **Enquadramento inicial:** na primeira carga o mapa enquadra todos os animais (zoom máx. 17),
 com margens `64 / 240 / 64 / 210` dp (esq./topo/dir./base) para os alfinetes não ficarem
 **atrás** do cabeçalho nem dos botões. Sem animais, fica no centro padrão
-(`AppConstants.defaultMapCenter`, ainda provisório). O app **nunca** usa a localização do usuário.
+(`AppConstants.defaultMapCenter` = Centro de João Pessoa – PB). O app **nunca** usa a localização do usuário.
 
 **Barra de status:** um degradê branco → transparente (28 dp + altura da barra) fica sob ela,
 para o relógio e os ícones continuarem legíveis sobre o mapa.

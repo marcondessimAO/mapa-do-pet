@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mapa_do_pet/core/constants/app_constants.dart';
 import 'package:mapa_do_pet/core/services/image_storage_service.dart';
 import 'package:mapa_do_pet/core/theme/app_theme.dart';
 import 'package:mapa_do_pet/features/map/presentation/viewmodels/map_viewmodel.dart';
@@ -73,7 +74,13 @@ void main() {
     await tester.tap(find.text('Animais'));
     await tester.pumpAndSettle();
 
-    repository.store['x'] = buildPet(id: 'x', name: 'Novidade');
+    // No centro padrão do mapa, para o alfinete ficar dentro da tela.
+    repository.store['x'] = buildPet(
+      id: 'x',
+      name: 'Novidade',
+      latitude: AppConstants.defaultMapCenter.latitude,
+      longitude: AppConstants.defaultMapCenter.longitude,
+    );
     await tester.tap(find.text('Mapa'));
     await tester.pumpAndSettle();
 
