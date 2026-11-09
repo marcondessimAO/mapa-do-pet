@@ -20,16 +20,17 @@ Roteiro para ~10 minutos. Adapte os tempos ao que o professor pedir.
 
 Prepare o app com **dois animais já cadastrados** (um cão e um gato) para o mapa não abrir vazio.
 
-1. **Mapa.** Abra o app: ele já abre no mapa, com marcadores de formas diferentes para cão e gato. Troque o filtro para *Gatos* e volte para *Todos*.
-2. **Cadastro pelo toque.** Toque num lugar livre → *"Cadastrar animal aqui?"* → **Cadastrar**. Mostre que **só a espécie é obrigatória**: escolha *Gato* e salve. O marcador aparece.
-3. **Ajuste do ponto.** Abra outro cadastro e toque no mini-mapa para mover o pino (a localização é aproximada e editável).
-4. **Lista.** Aba *Animais*: busque por uma rua sem acento (ex.: "praca") e filtre por espécie.
-5. **Perfil.** Toque no animal: identificação, características, informações médicas e a mensagem de adoção no fim.
-6. **Cuidados.** *Adicionar registro* → *Alimentação* → salvar. Mostre o destaque **Última alimentação**. Registre outra com data de ontem e mostre que o destaque **não muda** (vale o registro mais recente, não o último lançado).
-7. **Medicamento.** Tente salvar sem o nome (o app explica o erro) e depois com o nome.
-8. **Edição sem perder histórico.** *Atualizar informações* → marque a vacinação antirrábica → salvar. Os cuidados continuam lá.
-9. **Persistência.** Feche o app por completo e reabra: tudo continua.
-10. **Remoção.** *Remover animal* → confirmação ("não pode ser desfeita") → o animal e o histórico somem.
+1. **Mapa.** Abra o app: ele já abre no mapa, com alfinetes de formas diferentes para cão e gato e o contador *"2 no mapa"*. Troque o filtro para *Gatos* e volte para *Todos*.
+2. **Cartão do animal.** Toque num alfinete: a câmera voa até ele, o alfinete ganha um halo e sobe o **cartão de resumo**. Toque no ✕ (ou num lugar vazio do mapa) para fechar. Mostre o zoom **+ / −** e o botão **mostrar todos os animais**.
+3. **Cadastro por "Adicionar animal".** Toque em **Adicionar animal**, arraste o mapa até o local (o alfinete central marca o ponto) e toque em **Confirmar local**. Mostre que **só a espécie é obrigatória**: escolha *Gato* e salve. O alfinete aparece. *(Alternativa: tocar num lugar livre → "Cadastrar animal aqui?".)*
+4. **Ajuste do ponto.** Abra outro cadastro e toque no mini-mapa para mover o pino (a localização é aproximada e editável).
+5. **Lista.** Aba *Animais*: busque por uma rua sem acento (ex.: "praca") e filtre por espécie. Puxe a lista para baixo para atualizar.
+6. **Perfil.** Toque no animal: identificação, características, informações médicas e a mensagem de adoção no fim.
+7. **Cuidados.** *Adicionar registro* → *Alimentação* → salvar. Mostre o destaque **Última alimentação**. Registre outra com data de ontem e mostre que o destaque **não muda** (vale o registro mais recente, não o último lançado).
+8. **Medicamento.** Tente salvar sem o nome (o app explica o erro) e depois com o nome.
+9. **Edição sem perder histórico.** *Atualizar informações* → marque a vacinação antirrábica → salvar. Os cuidados continuam lá.
+10. **Persistência.** Feche o app por completo e reabra: tudo continua.
+11. **Remoção.** *Remover animal* → confirmação ("não pode ser desfeita") → o animal e o histórico somem.
 
 > Se estiver sem internet, o mapa avisa que o fundo não carregou, mas os animais continuam aparecendo.
 

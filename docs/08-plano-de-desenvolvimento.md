@@ -22,9 +22,10 @@ Detalha as 7 fases do [plano do projeto §14](plano-do-projeto.md#14-plano-de-de
 | **Fase 3 — mapa** (T3-1…T3-7) | ✅ | Tiles OSM com atribuição, marcadores SVG, filtro, enquadramento sem GPS, toque → confirmação → cadastro, resumo do marcador, mini-mapa no cadastro, aviso offline; 209 testes |
 | **Fase 4 — perfil e edição** (T4-1…T4-4) | ✅ | Perfil com seções A, B, C, E e F, edição que preserva o histórico, vacinação antirrábica, remoção com confirmação, foto trocada/removida com limpeza segura; lista e mapa abrem o perfil; 249 testes |
 | **Fase 5 — cuidados e histórico** (T5-1…T5-7) | ✅ | Registros de alimentação, banho, medicamento e saúde (só acrescentam), migração 002, destaques da última alimentação/banho, histórico por tipo, resumo de saúde no perfil; 326 testes |
-| **Fase 6 — informações e acabamento** | 🟡 | Tudo o que dá para verificar sem aparelho está pronto (acessibilidade medida, fluxo com reabertura do banco, atribuição do OSM com link, roteiro). Faltam emulador/aparelho, APK e slides |
+| **Fase 6 — informações e acabamento** | 🟡 | Acessibilidade medida, fluxo com reabertura do banco, atribuição do OSM com link e roteiro prontos. Faltam `integration_test` em aparelho, TalkBack, APK de release e slides |
+| **Fase 7 — redesign e correções após rodar no emulador** (T7-1…T7-6) | ✅ | Android SDK + emulador instalados e app executado; crash do perfil corrigido (DI); mapa e telas redesenhados (alfinetes, cartão flutuante, modo "Adicionar animal", zoom, tema moderno); 382 testes |
 
-> ✅ **Fases 0 a 5 concluídas** e **Fase 6 em grande parte** (ver o status abaixo). O que resta depende de um **emulador ou aparelho Android** (testar a interface de verdade, `integration_test`, APK e capturas de tela) e de decisões do grupo (T0-6 fluxo Git, T0-9 centro do mapa).
+> ✅ **Fases 0 a 5 e 7 concluídas** e **Fase 6 em grande parte** (ver o status abaixo). O app **já rodou num emulador Android**. O que resta: `integration_test` em aparelho, teste com TalkBack, capturas de tela no README, APK de release, slides, e decisões do grupo (T0-6 fluxo Git, T0-9 centro do mapa).
 
 ## 1. Visão geral das fases
 
@@ -39,6 +40,7 @@ flowchart LR
   F3 --> F6["Fase 6<br/>Acabamento"]
   F4 --> F6
   F5 --> F6
+  F6 --> F7["Fase 7<br/>Redesign e correções<br/>(após rodar no emulador)"]
 ```
 
 Após a Fase 1, **Fase 2 (pets)**, **Fase 5 (cuidados — camadas domain/data)** e a base da **Fase 3 (mapa)** podem andar em paralelo por pessoas diferentes.
@@ -116,7 +118,7 @@ Após a Fase 1, **Fase 2 (pets)**, **Fase 5 (cuidados — camadas domain/data)**
 | T3-2 ✅ | `PetMarker` com SVG cão/gato + `Semantics` | M | T3-1 | RF-01 |
 | T3-3 ✅ | `MapViewModel`: carregar pets, filtro de espécie, enquadramento (`LatLngBounds`) ou centro padrão | M | T1-6 | RF-01, RF-02 |
 | T3-4 ✅ | Toque em área livre → `ConfirmRegisterSheet` → `/pet/new` com `LatLng` | M | T2-7 | RF-03 |
-| T3-5 ✅ | Toque no marcador → `PetSummarySheet` (foto, nome, espécie, botão "Ver perfil" — **oculto até a T4-2**, quando o perfil existir) | M | T3-2 | RF-04 |
+| T3-5 ✅ | Toque no marcador → `PetSummarySheet` (foto, nome, espécie, botão "Ver perfil" — **oculto até a T4-2**, quando o perfil existir). *Na Fase 7 virou um cartão flutuante sobre o mapa* | M | T3-2 | RF-04 |
 | T3-6 ✅ | Mini-mapa de ajuste do ponto no formulário | M | T3-1, T2-5 | RF-07 |
 | T3-7 ✅ | Aviso de "sem internet" e recarga do mapa ao voltar do cadastro | P | T3-3 | — |
 
@@ -171,9 +173,29 @@ Após a Fase 1, **Fase 2 (pets)**, **Fase 5 (cuidados — camadas domain/data)**
 |--------|:------:|------------|
 | T6-1 Acessibilidade | ✅ | Fonte a 200 %, alvos ≥ 48 dp, rótulos e contraste **medidos por testes** (ver [05 §7](05-interface-e-design.md#7-verificação-de-acessibilidade-medida)). **Falta** testar com TalkBack/VoiceOver em aparelho. |
 | T6-2 Fluxo completo | 🟡 | Feito como teste comum (`test/integration/app_flow_test.dart`): SQLite real em arquivo, cadastrar → listar → cuidados → editar → **fechar e reabrir o banco** → remover. **Falta** o `integration_test` em emulador/aparelho. |
-| T6-3 Cobertura e análise | ✅ | 369 testes; `lib/` 94,7 % (domain+data 99,1 %, ViewModels 95,2 %, UI 92,8 %); `flutter analyze` limpo; único `TODO` é a decisão em aberto do centro do mapa. |
-| T6-4 Documentação | 🟡 | Docs, UML e README sincronizados com o código. **Faltam** as capturas de tela do README (exigem emulador). |
-| T6-5 Entrega | 🟡 | Roteiro e slides sugeridos em [10](10-roteiro-de-apresentacao.md). **Faltam** o APK de release (exige Android SDK), o vídeo/demonstração e os slides prontos. |
+| T6-3 Cobertura e análise | ✅ | 382 testes; `lib/` 95,2 % (domain+data 99,1 %, ViewModels 95,2 %, UI 94,1 %); `flutter analyze` limpo; único `TODO` é a decisão em aberto do centro do mapa. |
+| T6-4 Documentação | 🟡 | Docs, UML e README sincronizados com o código (incl. o redesign da Fase 7). **Faltam** as capturas de tela no README — o emulador já existe, falta tirá-las e versioná-las. |
+| T6-5 Entrega | 🟡 | Roteiro e slides sugeridos em [10](10-roteiro-de-apresentacao.md). O Android SDK já está instalado; **faltam** o APK de release, o vídeo/demonstração e os slides prontos. |
+
+---
+
+## Fase 7 — Redesign e correções após rodar no emulador
+
+Origem: com o Android SDK instalado, o app foi executado pela primeira vez e o teste
+manual de cadastro gerou dois frutos — um **bug** que os testes não viam e o pedido de
+uma interface mais moderna e interativa.
+
+| ID | Tarefa | Status | Observação |
+|----|--------|:------:|------------|
+| T7-1 | Instalar Android SDK e emulador; compilar e executar o app | ✅ | cmdline-tools + plataforma 36 + imagem x86_64; AVD com 4 GB / 4 núcleos (com 2,5 GB o sistema do emulador dava ANR) |
+| T7-2 | Corrigir `ProviderNotFoundError` ao abrir o perfil | ✅ | `CareRepository` passou a ser declarado antes de `GetPetProfile`; teste de regressão em `test/core/di/` |
+| T7-3 | Tema moderno: raios, cartões e campos preenchidos, navegação em pílula, transições | ✅ | `AppTheme`/`AppRadius`; paleta oficial intacta (+ `areiaClara`, `sombra` derivadas); ver [05 §1](05-interface-e-design.md#1-tokens-visuais) |
+| T7-4 | Mapa interativo: alfinetes, cartão flutuante, câmera animada, zoom, "mostrar todos", modo "Adicionar animal" | ✅ | Ver [05 §6 e §8](05-interface-e-design.md#8-interações-do-mapa); 11 testes novos |
+| T7-5 | Lista, informações e perfil no novo visual | ✅ | Contador, pull-to-refresh, pílula da espécie, seções em cartões |
+| T7-6 | Sincronizar docs/UML | ✅ | Este conjunto de documentos |
+
+**Pendências desta fase (não feitas):** agrupar (*cluster*) alfinetes próximos; revisar o
+mapa com fonte grande e muitos animais em aparelho físico; tirar as capturas de tela.
 
 ---
 

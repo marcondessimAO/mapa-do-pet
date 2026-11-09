@@ -119,8 +119,9 @@ Barra inferior com `IndexedStack` (preserva zoom/posição do mapa ao trocar de 
 
 ### 5.1 Mapa
 - Centro inicial **sem GPS**: enquadrar os animais cadastrados (`LatLngBounds`); se não houver nenhum, usar `AppConstants.defaultMapCenter` (cidade da instituição/equipe) com zoom padrão. *(lacuna do planner original: não definia onde o mapa abre.)*
-- Marcadores: `assets/markers/dog.svg` e `cat.svg` (o Material Icons só tem um `pets`). Cão = silhueta/patinha preenchida em Caramelo; gato = forma distinta (orelhas) preenchida em Marrom.
-- Toque em local livre → *bottom sheet* "Cadastrar animal aqui?" → formulário. A confirmação evita cadastros acidentais.
+- Marcadores: `assets/markers/dog.svg` e `cat.svg` (o Material Icons só tem um `pets`). Cão = silhueta/patinha preenchida em Caramelo; gato = forma distinta (orelhas) preenchida em Marrom. *Após o redesign (Fase 7)* cada marcador é um **alfinete** com ponta no local exato, animação de entrada e destaque (halo) quando selecionado.
+- Toque num alfinete → a câmera voa até o animal e sobe um **cartão de resumo flutuante** (foto, nome, espécie, detalhes, "Ver perfil"). Controles: zoom +/−, "mostrar todos os animais".
+- Toque em local livre → *bottom sheet* "Cadastrar animal aqui?" → formulário. A confirmação evita cadastros acidentais. *(Fase 7)* Alternativa mais descobrível: botão **Adicionar animal** → modo de posicionamento (alfinete central; o usuário arrasta o mapa) → **Confirmar local** → formulário.
 - Rodapé com atribuição "© OpenStreetMap contributors". Sem internet, os tiles não carregam: exibir aviso discreto, mas lista e perfis continuam funcionando.
 
 ### 5.2 Cadastro (formulário em seções)

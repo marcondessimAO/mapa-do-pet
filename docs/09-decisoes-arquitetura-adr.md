@@ -60,3 +60,13 @@ Formato: **Contexto → Decisão → Consequências → Alternativas**. Status: 
 **Contexto.** `LIKE` do SQLite não ignora acentos nem maiúsculas fora de ASCII.
 **Decisão.** Carregar a lista e filtrar com texto normalizado (`TextSearchFilter`).
 **Consequências.** (+) Busca correta em português; (−) não escala a dezenas de milhares de linhas — aceitável para o MVP local; revisitar se houver backend.
+
+## ADR-011 · A raiz de DI declara cada dependência antes de quem a lê
+**Contexto.** `buildAppProviders` é uma lista de `Provider`s criados de forma preguiçosa. `GetPetProfile` lê o `CareRepository`, mas este estava declarado **depois**; o `Provider` só enxerga o que vem acima na lista. O erro (`ProviderNotFoundError`) só aparecia na primeira vez que alguém abria um perfil, e passou despercebido por 369 testes que montavam os providers à mão.
+**Decisão.** Manter a ordem **infraestrutura → repositórios → use cases → ViewModels** e cobrir a raiz com um teste (`test/core/di/app_providers_test.dart`) que resolve todos os use cases a partir de `buildAppProviders`.
+**Consequências.** (+) Um erro de ordem passa a falhar em teste, não no aparelho; (−) a ordem da lista é uma regra implícita — o comentário no código e o teste a documentam. **Alternativa possível (não adotada):** `Provider` com `lazy: false`, que faria o erro aparecer já na abertura do app, mas sem explicitar a ordem.
+
+## ADR-012 · Cartão flutuante e modo de posicionamento no mapa
+**Contexto.** Depois de rodar o app no emulador, o resumo do animal abria numa folha modal que cobria o mapa (o usuário perdia de vista onde o animal estava) e o cadastro dependia de descobrir que se pode tocar num lugar livre.
+**Decisão.** (1) O resumo vira um **cartão flutuante** sobre o mapa, enquanto a câmera voa até o animal; (2) o botão **Adicionar animal** abre um **modo de posicionamento**: um alfinete fixo no centro e o usuário arrasta o mapa até o local antes de **Confirmar local**. O toque em área livre com confirmação continua existindo.
+**Consequências.** (+) O mapa continua visível; o cadastro fica descobrível e o ponto, mais preciso; (−) a tela do mapa ganha estado (`Livre`/`Selecionado`/`Posicionando`, ver [UML §4.4](uml/atividades-e-estados.md)) e mais testes. **Alternativa:** manter a folha modal e só restilizar — descartada por esconder o mapa.

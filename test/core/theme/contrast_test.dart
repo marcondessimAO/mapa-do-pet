@@ -24,6 +24,13 @@ void main() {
           greaterThanOrEqualTo(4.5));
     });
 
+    test(
+        'marrom sobre areia clara (cartões e campos) serve para qualquer texto',
+        () {
+      expect(contrast(AppColors.marrom, AppColors.areiaClara),
+          greaterThanOrEqualTo(7));
+    });
+
     test('o vermelho de erro serve para texto comum sobre branco (>= 4,5)', () {
       expect(contrast(AppColors.erro, AppColors.branco),
           greaterThanOrEqualTo(4.5));
