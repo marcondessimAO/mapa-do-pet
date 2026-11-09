@@ -40,7 +40,7 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   /// Margens do enquadramento: deixam os animais fora do cabeçalho (em cima) e
   /// da dica/botões (embaixo), que flutuam sobre o mapa.
-  static const EdgeInsets _framePadding = EdgeInsets.fromLTRB(64, 240, 64, 170);
+  static const EdgeInsets _framePadding = EdgeInsets.fromLTRB(64, 240, 64, 210);
   static const double _frameMaxZoom = 17;
   static const double _minZoom = 3;
   static const double _maxZoom = 18;
