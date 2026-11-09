@@ -18,9 +18,10 @@ Detalha as 7 fases do [plano do projeto §14](plano-do-projeto.md#14-plano-de-de
 | Testes: unitários, de dados (SQLite em memória) e use cases | ✅ | 95 testes passando; cobertura de domain+data+core ≈ 94 % |
 | Projeto Flutter de plataforma (`android/`, `ios/`) | ✅ | Gerado; permissões `INTERNET` e textos de câmera/galeria configurados |
 | **Fase 1 — domínio e dados de `pets`** (T1-1…T1-7) | ✅ | Validador, filtros, mapper, datasource, repositório SQLite, use cases e DI |
-| Fase 2 — cadastro e lista | ⬜ | Próxima |
+| **Fase 2 — cadastro e lista** (T2-1…T2-7) | ✅ | Serviço de fotos, rótulos, `TriStateSelector`, `PetFormViewModel`, `PetListViewModel`, páginas de cadastro e lista; 161 testes, ViewModels ≈ 90 % |
+| Fase 3 — mapa | ⬜ | Próxima |
 
-> ✅ **Fases 0 e 1 concluídas** (exceto T0-6 e T0-9, e o teste em emulador de T0-1/T0-5, que dependem do grupo e de um aparelho). Próximo passo: **Fase 2**.
+> ✅ **Fases 0, 1 e 2 concluídas** (exceto T0-6 e T0-9, e o teste em emulador de T0-1/T0-5, que dependem do grupo e de um aparelho). Próximo passo: **Fase 3**. O app ainda não foi aberto em emulador (sem Android SDK): a interface foi validada por testes de widget.
 
 ## 1. Visão geral das fases
 
@@ -92,13 +93,13 @@ Após a Fase 1, **Fase 2 (pets)**, **Fase 5 (cuidados — camadas domain/data)**
 
 | ID | Tarefa | Tam. | Depende | Req. |
 |----|--------|:----:|---------|------|
-| T2-1 | `ImageStorageService` (Facade): escolher, copiar para `pet_photos/`, apagar, resolver caminho; testes com *fake* do seletor | M | T0-4 | RF-06 |
-| T2-2 | Extensões `label` pt-BR dos enums (apresentação) | P | T0-4 | — |
-| T2-3 | `TriStateSelector` (widget + teste) | M | T2-2 | RF-11 |
-| T2-4 | `PetFormViewModel`: id gerado ao abrir, `isSaving`, erros por campo, `save()` idempotente | G | T1-6 | RN-09 |
-| T2-5 | `PetRegistrationPage` em seções; Gestante oculto para macho; quantidade de filhotes condicional | G | T2-3, T2-4 | RF-05 |
-| T2-6 | `PetListViewModel` + `PetListPage` + `PetCard` + `SpeciesFilterBar`; estados carregando/vazio/sem resultado/erro | G | T1-2, T1-6 | RF-08 |
-| T2-7 | Rota `/pet/new` (recebe coordenadas; na Fase 2 pode vir de ponto fixo de teste) | P | T2-5 | — |
+| T2-1 ✅ | `ImageStorageService` (Facade): escolher, copiar para `pet_photos/`, apagar, resolver caminho; testes com *fake* do seletor | M | T0-4 | RF-06 |
+| T2-2 ✅ | Extensões `label` pt-BR dos enums (apresentação) | P | T0-4 | — |
+| T2-3 ✅ | `TriStateSelector` (widget + teste) | M | T2-2 | RF-11 |
+| T2-4 ✅ | `PetFormViewModel`: id gerado ao abrir, `isSaving`, erros por campo, `save()` idempotente | G | T1-6 | RN-09 |
+| T2-5 ✅ | `PetRegistrationPage` em seções; Gestante oculto para macho; quantidade de filhotes condicional | G | T2-3, T2-4 | RF-05 |
+| T2-6 ✅ | `PetListViewModel` + `PetListPage` + `PetCard` + `SpeciesFilterBar`; estados carregando/vazio/sem resultado/erro | G | T1-2, T1-6 | RF-08 |
+| T2-7 ✅ | Rota de cadastro (provisória: botão **Cadastrar** na lista abre o formulário no centro padrão; em T3-4 passa a nascer do toque no mapa)  — antes: rota `/pet/new` (recebe coordenadas; na Fase 2 pode vir de ponto fixo de teste) | P | T2-5 | — |
 
 **Saída:** é possível cadastrar (só espécie) e achar o animal na lista, inclusive após reiniciar.
 

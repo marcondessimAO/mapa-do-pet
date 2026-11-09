@@ -47,20 +47,26 @@ final class PetRepositoryImpl implements PetRepository {
         return row == null
             ? const Err(NotFoundFailure('Animal não encontrado.'))
             : Ok(PetMapper.fromMap(row));
-      });
+      }, failure: _readFailure);
 
   @override
   Future<Result<List<Pet>>> findAll() => _guard(() async {
         final rows = await _dataSource.findAll();
         return Ok(rows.map(PetMapper.fromMap).toList(growable: false));
-      });
+      }, failure: _readFailure);
 
-  Future<Result<T>> _guard<T>(Future<Result<T>> Function() action) async {
+  static const StorageFailure _readFailure =
+      StorageFailure('Não foi possível carregar os animais. Tente novamente.');
+
+  Future<Result<T>> _guard<T>(
+    Future<Result<T>> Function() action, {
+    Failure failure = const StorageFailure(),
+  }) async {
     try {
       return await action();
     } catch (error, stackTrace) {
       AppLogger.error('Falha ao acessar os animais', error, stackTrace);
-      return const Err(StorageFailure());
+      return Err(failure);
     }
   }
 }

@@ -391,7 +391,8 @@ lib/
 │   ├── error/{result.dart, failure.dart}
 │   ├── theme/{app_colors.dart, app_theme.dart}
 │   ├── constants/app_constants.dart   # centro padrão do mapa, URL de tiles, limites
-│   ├── services/image_storage_service.dart
+│   ├── services/{image_storage_service.dart, image_picker_gateway.dart}
+│   ├── state/view_state.dart
 │   ├── utils/{date_formatter.dart, text_normalizer.dart}
 │   └── widgets/{empty_state.dart, error_view.dart, loading_view.dart}
 ├── features/

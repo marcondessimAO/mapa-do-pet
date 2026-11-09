@@ -8,16 +8,23 @@ import '../../features/pets/domain/usecases/delete_pet.dart';
 import '../../features/pets/domain/usecases/get_pets.dart';
 import '../../features/pets/domain/usecases/register_pet.dart';
 import '../../features/pets/domain/usecases/update_pet.dart';
+import '../../features/pets/presentation/viewmodels/pet_list_viewmodel.dart';
 import '../database/app_database.dart';
+import '../services/image_storage_service.dart';
 import '../utils/clock.dart';
 
 /// Composition root: único lugar que conhece as implementações concretas.
 ///
-/// Registra infraestrutura, repositórios e use cases. ViewModels entram a
-/// partir da Fase 2, conforme o plano de desenvolvimento.
-List<SingleChildWidget> buildAppProviders({required AppDatabase database}) => [
+/// Registra infraestrutura, repositórios, use cases e os ViewModels que vivem
+/// o tempo todo do app. ViewModels de formulário são criados por tela.
+List<SingleChildWidget> buildAppProviders({
+  required AppDatabase database,
+  required ImageStorageService imageStorage,
+}) =>
+    [
       // Infraestrutura
       Provider<AppDatabase>.value(value: database),
+      Provider<ImageStorageService>.value(value: imageStorage),
 
       // Pets: dados
       Provider<PetRepository>(
@@ -35,6 +42,11 @@ List<SingleChildWidget> buildAppProviders({required AppDatabase database}) => [
           create: (context) => DeletePet(context.read<PetRepository>())),
       Provider<GetPets>(
           create: (context) => GetPets(context.read<PetRepository>())),
+
+      // Pets: ViewModel da lista (também recarregado após cadastrar)
+      ChangeNotifierProvider<PetListViewModel>(
+        create: (context) => PetListViewModel(context.read<GetPets>())..load(),
+      ),
 
       // TODO(T5-3): CareRepository -> CareRepositoryImpl(CareLocalDataSource(database))
     ];
