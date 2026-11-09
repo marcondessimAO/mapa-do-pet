@@ -6,11 +6,14 @@ import 'package:mapa_do_pet/features/care/domain/enums/care_type.dart';
 FeedingRecord feeding(String id, DateTime at) =>
     FeedingRecord(id: id, petId: 'pet-1', occurredAt: at);
 
-BathRecord bath(String id, DateTime at) => BathRecord(id: id, petId: 'pet-1', occurredAt: at);
+BathRecord bath(String id, DateTime at) =>
+    BathRecord(id: id, petId: 'pet-1', occurredAt: at);
 
 void main() {
   group('CareSummary', () {
-    test('has no last feeding or bath when there are no records (never assumes today)', () {
+    test(
+        'has no last feeding or bath when there are no records (never assumes today)',
+        () {
       final summary = CareSummary.from(const []);
 
       expect(summary.lastFeeding, isNull);
@@ -18,7 +21,9 @@ void main() {
       expect(summary.records, isEmpty);
     });
 
-    test('last feeding is the greatest occurredAt even when logged out of order (RN-08)', () {
+    test(
+        'last feeding is the greatest occurredAt even when logged out of order (RN-08)',
+        () {
       final summary = CareSummary.from([
         feeding('a', DateTime.utc(2025, 3, 10)),
         feeding('b', DateTime.utc(2025, 3, 12)),
@@ -46,14 +51,18 @@ void main() {
       ]);
 
       expect(summary.records.map((r) => r.id), ['new', 'b', 'old']);
-      expect(summary.recordsOf(CareType.feeding).map((r) => r.id), ['new', 'old']);
+      expect(
+          summary.recordsOf(CareType.feeding).map((r) => r.id), ['new', 'old']);
       expect(summary.recordsOf(CareType.medication), isEmpty);
     });
 
-    test('records list is unmodifiable (history cannot be altered in place)', () {
-      final summary = CareSummary.from([feeding('a', DateTime.utc(2025, 3, 1))]);
+    test('records list is unmodifiable (history cannot be altered in place)',
+        () {
+      final summary =
+          CareSummary.from([feeding('a', DateTime.utc(2025, 3, 1))]);
 
-      expect(() => summary.records.add(feeding('x', DateTime.utc(2025))), throwsUnsupportedError);
+      expect(() => summary.records.add(feeding('x', DateTime.utc(2025))),
+          throwsUnsupportedError);
     });
   });
 }

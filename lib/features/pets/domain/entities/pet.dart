@@ -106,17 +106,23 @@ final class Pet {
       hasInjuries: hasInjuries ?? this.hasInjuries,
       rabiesVaccination: rabiesVaccination ?? this.rabiesVaccination,
       name: identical(name, _unset) ? this.name : name as String?,
-      photoFileName:
-          identical(photoFileName, _unset) ? this.photoFileName : photoFileName as String?,
-      appearance: identical(appearance, _unset) ? this.appearance : appearance as String?,
-      litterSize: identical(litterSize, _unset) ? this.litterSize : litterSize as int?,
+      photoFileName: identical(photoFileName, _unset)
+          ? this.photoFileName
+          : photoFileName as String?,
+      appearance: identical(appearance, _unset)
+          ? this.appearance
+          : appearance as String?,
+      litterSize:
+          identical(litterSize, _unset) ? this.litterSize : litterSize as int?,
       injuryDescription: identical(injuryDescription, _unset)
           ? this.injuryDescription
           : injuryDescription as String?,
-      knownDiseases:
-          identical(knownDiseases, _unset) ? this.knownDiseases : knownDiseases as String?,
-      otherHealthInfo:
-          identical(otherHealthInfo, _unset) ? this.otherHealthInfo : otherHealthInfo as String?,
+      knownDiseases: identical(knownDiseases, _unset)
+          ? this.knownDiseases
+          : knownDiseases as String?,
+      otherHealthInfo: identical(otherHealthInfo, _unset)
+          ? this.otherHealthInfo
+          : otherHealthInfo as String?,
       notes: identical(notes, _unset) ? this.notes : notes as String?,
     );
   }

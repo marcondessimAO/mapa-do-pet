@@ -4,17 +4,22 @@ import 'package:mapa_do_pet/features/pets/domain/entities/pet_location.dart';
 void main() {
   group('PetLocation', () {
     test('accepts coordinates on the valid boundaries', () {
-      expect(() => const PetLocation(latitude: -90, longitude: -180), returnsNormally);
-      expect(() => const PetLocation(latitude: 90, longitude: 180), returnsNormally);
+      expect(() => const PetLocation(latitude: -90, longitude: -180),
+          returnsNormally);
+      expect(() => const PetLocation(latitude: 90, longitude: 180),
+          returnsNormally);
     });
 
     test('rejects latitude outside -90..90', () {
-      expect(() => PetLocation(latitude: 91, longitude: 0), throwsA(isA<AssertionError>()));
-      expect(() => PetLocation(latitude: -91, longitude: 0), throwsA(isA<AssertionError>()));
+      expect(() => PetLocation(latitude: 91, longitude: 0),
+          throwsA(isA<AssertionError>()));
+      expect(() => PetLocation(latitude: -91, longitude: 0),
+          throwsA(isA<AssertionError>()));
     });
 
     test('rejects longitude outside -180..180', () {
-      expect(() => PetLocation(latitude: 0, longitude: 181), throwsA(isA<AssertionError>()));
+      expect(() => PetLocation(latitude: 0, longitude: 181),
+          throwsA(isA<AssertionError>()));
     });
 
     test('isValid mirrors the constructor rules without throwing', () {

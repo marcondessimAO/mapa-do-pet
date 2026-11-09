@@ -12,18 +12,22 @@ void main() {
     });
 
     test('Err exposes its failure and has no value', () {
-      const Result<int> result = Err(ValidationFailure('inválido', field: 'name'));
+      const Result<int> result =
+          Err(ValidationFailure('inválido', field: 'name'));
 
       expect(result.isOk, isFalse);
       expect(result.valueOrNull, isNull);
-      expect(switch (result) {
-        Err(:final failure) => failure.message,
-        Ok() => 'não deveria chegar aqui',
-      }, 'inválido');
+      expect(
+          switch (result) {
+            Err(:final failure) => failure.message,
+            Ok() => 'não deveria chegar aqui',
+          },
+          'inválido');
     });
 
     test('default failure messages are user friendly', () {
-      expect(const StorageFailure().message, 'Não foi possível salvar. Tente novamente.');
+      expect(const StorageFailure().message,
+          'Não foi possível salvar. Tente novamente.');
       expect(const NotFoundFailure().message, 'Registro não encontrado.');
     });
   });

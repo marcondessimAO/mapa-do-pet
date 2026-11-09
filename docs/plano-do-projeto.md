@@ -399,7 +399,8 @@ lib/
 │   │   ├── domain/
 │   │   │   ├── entities/{pet.dart, pet_location.dart}
 │   │   │   ├── enums/{pet_species, pet_sex, pet_age_group, pet_size, tri_state}.dart
-│   │   │   ├── filters/{pet_filter.dart, species_filter.dart, text_search_filter.dart}
+│   │   │   ├── filters/pet_filter.dart      # PetFilter + SpeciesFilter + TextSearchFilter + CompositePetFilter
+│   │   │   ├── validators/pet_validator.dart
 │   │   │   ├── repositories/pet_repository.dart
 │   │   │   └── usecases/{register_pet, update_pet, delete_pet, get_pets, get_pet_profile}.dart
 │   │   ├── data/

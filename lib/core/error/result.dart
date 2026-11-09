@@ -8,6 +8,11 @@ sealed class Result<T> {
 
   bool get isOk => this is Ok<T>;
 
+  Failure? get failureOrNull => switch (this) {
+        Ok<T>() => null,
+        Err<T>(:final failure) => failure,
+      };
+
   T? get valueOrNull => switch (this) {
         Ok<T>(:final value) => value,
         Err<T>() => null,
