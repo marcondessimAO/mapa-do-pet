@@ -45,6 +45,16 @@ List<SingleChildWidget> buildAppProviders({
             PetRepositoryImpl(PetLocalDataSource(context.read<AppDatabase>())),
       ),
 
+      // Cuidados: dados (só acrescentam; nunca alteram o histórico).
+      // Fica ANTES dos use cases porque `GetPetProfile` o lê: o Provider só
+      // enxerga o que foi declarado acima na lista.
+      Provider<CareRepository>(
+        create: (context) => CareRepositoryImpl(
+          CareLocalDataSource(context.read<AppDatabase>()),
+          systemNow,
+        ),
+      ),
+
       // Pets: casos de uso
       Provider<RegisterPet>(
           create: (context) => RegisterPet(context.read<PetRepository>())),
@@ -61,13 +71,7 @@ List<SingleChildWidget> buildAppProviders({
                 context.read<CareRepository>(),
               )),
 
-      // Cuidados: dados e casos de uso (só acrescentam; nunca alteram o histórico)
-      Provider<CareRepository>(
-        create: (context) => CareRepositoryImpl(
-          CareLocalDataSource(context.read<AppDatabase>()),
-          systemNow,
-        ),
-      ),
+      // Cuidados: caso de uso
       Provider<AddCareRecord>(
         create: (context) =>
             AddCareRecord(context.read<CareRepository>(), systemNow),
