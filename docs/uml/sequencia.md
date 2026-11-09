@@ -37,10 +37,17 @@ sequenceDiagram
   participant DB as SQLite
   participant MV as MapViewModel
 
-  V->>MP: toca em área livre do mapa
-  MP->>CS: mostra "Cadastrar animal aqui?"
-  V->>CS: confirma
-  CS->>RP: abre formulário com LatLng
+  alt toca em área livre do mapa
+    V->>MP: toca em área livre do mapa
+    MP->>CS: mostra "Cadastrar animal aqui?"
+    V->>CS: confirma
+    CS->>RP: abre formulário com LatLng
+  else botão "Adicionar animal"
+    V->>MP: toca em "Adicionar animal" (modo de posicionamento)
+    V->>MP: arrasta o mapa até o alfinete central
+    V->>MP: toca em "Confirmar local"
+    MP->>RP: abre formulário com o centro do mapa (LatLng)
+  end
   RP->>VM: cria (id = UUID, localização inicial)
   V->>RP: escolhe espécie e preenche campos
   V->>RP: toca em "Finalizar cadastro"

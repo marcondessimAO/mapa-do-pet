@@ -4,7 +4,12 @@
 
 ```mermaid
 flowchart TD
-  A([Início]) --> B["Toca em área livre do mapa"]
+  A([Início]) --> A1{"Como começa?"}
+  A1 -- "Toca em área livre" --> B["Toca em área livre do mapa"]
+  A1 -- "Botão Adicionar animal" --> A2["Modo de posicionamento:<br/>arrasta o mapa até o alfinete central"]
+  A2 --> A3{"Confirmar local<br/>ou Cancelar?"}
+  A3 -- Cancelar --> Z
+  A3 -- "Confirmar local" --> D
   B --> C{"Confirma<br/>Cadastrar aqui?"}
   C -- Não --> Z([Fim - nada alterado])
   C -- Sim --> D["Abre formulário com coordenadas e novo id"]
@@ -58,7 +63,9 @@ flowchart LR
     INFO["Informações"]
   end
   MAP -->|"toque em área livre + confirmar"| REG["Cadastro de animal"]
-  MAP -->|"toque no marcador"| SUM["Resumo (bottom sheet)"]
+  MAP -->|"Adicionar animal + Confirmar local"| REG
+  MAP -->|"toque no alfinete"| SUM["Resumo (cartão flutuante sobre o mapa)"]
+  SUM -->|"✕ ou toque no mapa"| MAP
   SUM -->|"Ver perfil"| PROF
   LIST -->|"toque no cartão"| PROF["Perfil do animal"]
   REG -->|"salvar"| MAP
@@ -110,5 +117,24 @@ stateDiagram-v2
   Cadastrado --> Removido : DeletePet (cascata nos registros)
   Removido --> [*]
 ```
+
+### 4.4 Modos da tela do mapa (`MapPage`)
+
+```mermaid
+stateDiagram-v2
+  [*] --> Livre
+  Livre --> Selecionado : toque no alfinete (câmera voa até o animal)
+  Selecionado --> Selecionado : toque em outro alfinete
+  Selecionado --> Livre : ✕ ou toque no mapa
+  Selecionado --> Livre : Ver perfil (volta e recarrega)
+  Livre --> Posicionando : botão Adicionar animal
+  Posicionando --> Livre : Cancelar
+  Posicionando --> Livre : Confirmar local (abre o cadastro; ao voltar recarrega)
+  Livre --> Livre : toque em área livre → "Cadastrar animal aqui?"
+```
+
+No modo **Posicionando** o toque no mapa é ignorado (o mapa só é arrastado) e os botões de
+zoom e o botão "Adicionar animal" ficam ocultos. Detalhes em
+[05 §8](../05-interface-e-design.md#8-interações-do-mapa).
 
 > Não existe estado "adotado": todos os animais são considerados disponíveis para adoção (plano §1.4).

@@ -27,7 +27,7 @@ Quem cuida de animais de rua costuma guardar tudo de cabeça: onde o bichinho fi
 
 | | |
 |---|---|
-| 🗺️ **Mapa interativo** | Marcadores diferentes para cães e gatos, filtro por espécie, cadastro tocando no mapa |
+| 🗺️ **Mapa interativo** | Alfinetes animados para cães e gatos, filtro por espécie, cartão de resumo flutuante, zoom e "mostrar todos"; cadastro tocando no mapa ou pelo botão **Adicionar animal** (arraste o mapa até o local e confirme) |
 | 📝 **Cadastro leve** | Só a espécie é obrigatória; foto, características e saúde são opcionais |
 | 📋 **Lista com busca** | Procure por nome ou região, sem diferenciar acentos |
 | 🐶 **Perfil completo** | Identificação, características, saúde, vacina antirrábica (Sim/Não/Não sei) |
@@ -141,7 +141,8 @@ test/                     # espelha lib/
 - [x] Fase 3 — Mapa
 - [x] Fase 4 — Perfil e edição
 - [x] Fase 5 — Cuidados e histórico
-- [ ] Fase 6 — Informações, acessibilidade e entrega *(testes, acessibilidade medida e documentação prontos; faltam testar em aparelho, gerar o APK e montar os slides)*
+- [x] Fase 7 — Redesign (mapa e telas modernos e interativos) e correção do crash do perfil, após rodar o app no emulador
+- [ ] Fase 6 — Informações, acessibilidade e entrega *(382 testes, acessibilidade medida e documentação prontos; o app já rodou no emulador; faltam `integration_test` e TalkBack em aparelho, capturas de tela, APK de release e os slides)*
 
 Detalhes em [docs/08-plano-de-desenvolvimento.md](docs/08-plano-de-desenvolvimento.md).
 

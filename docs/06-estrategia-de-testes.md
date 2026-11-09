@@ -86,19 +86,34 @@ dart format --set-exit-if-changed .  # formatação
 ## 8. Critérios de saída de uma fase
 Testes da fase verdes · `flutter analyze` sem avisos · cobertura da fase ≥ 80 % nas camadas-alvo · nenhum teste ignorado (`skip`) sem justificativa registrada.
 
-## 9. Estado final (Fase 6)
+## 9. Estado atual (após a Fase 7)
 
 | Camada | Cobertura | Observação |
 |--------|:---------:|------------|
 | Domínio + dados | 99,1 % | Inclui migrações, mappers, repositórios e SQLite real em memória |
 | ViewModels | 95,2 % | |
-| UI (páginas e widgets) | 92,8 % | A folha de cuidados fica em 74 %: os seletores nativos de data/hora não são exercitados |
-| **`lib/` inteiro** | **94,7 %** | 369 testes, `flutter analyze` sem avisos |
+| UI (páginas e widgets) | 94,1 % | A folha de cuidados fica em 74 %: os seletores nativos de data/hora não são exercitados |
+| **`lib/` inteiro** | **95,2 %** | 382 testes, `flutter analyze` sem avisos |
 
 Além dos testes por camada:
 
 - **Fluxo completo** (`test/integration/app_flow_test.dart`): SQLite real em arquivo, com o app "fechado e reaberto" no meio. Cobre persistência, edição preservando o histórico, remoção em cascata e idempotência.
 - **Acessibilidade** (`test/accessibility/`): fonte a 200 %, alvos de toque, rótulos e contraste.
-- **Contraste da paleta** (`test/core/theme/contrast_test.dart`).
+- **Contraste da paleta** (`test/core/theme/contrast_test.dart`), incluindo a areia clara dos cartões.
+- **Interações do mapa** (`test/features/map/presentation/map_page_test.dart`, grupo "interações do redesign"): contador, seleção e fechamento do cartão, toque que só fecha o cartão, dica que some ao arrastar, zoom, "mostrar todos", modo "Adicionar animal" (abrir, cancelar, ignorar toque no mapa, confirmar no centro).
+- **Composição de dependências** (`test/core/di/app_providers_test.dart`): resolve **todos** os use cases a partir de `buildAppProviders`.
 
-**Não coberto (precisa de aparelho):** `integration_test` em emulador, TalkBack/VoiceOver e o comportamento real do mapa com a rede.
+### Lição: o que os testes não pegaram
+
+Ao rodar o app pela primeira vez no emulador, **abrir o perfil de um animal travava** com
+`ProviderNotFoundError`: `GetPetProfile` lê o `CareRepository`, que era declarado
+**depois** dele na lista de providers (o Provider só enxerga o que vem acima, e a
+leitura é preguiçosa). Os 369 testes da época não viam isso porque cada teste montava os
+providers à mão, **sem passar pela raiz de DI real**. O teste de composição acima foi
+criado como regressão e falhava antes da correção.
+
+Regra para o futuro: todo teste de widget que depende de providers deve poder usar
+`buildAppProviders` (com banco em memória) ao menos uma vez, e o app deve ser executado
+num emulador antes de cada entrega.
+
+**Não coberto (precisa de aparelho):** `integration_test` em emulador, TalkBack/VoiceOver e o comportamento real do mapa com a rede. O app já foi **executado manualmente** no emulador (Android 36): mapa, cadastro, lista, perfil e modo "Adicionar animal" conferidos visualmente — isso não é teste automatizado.
