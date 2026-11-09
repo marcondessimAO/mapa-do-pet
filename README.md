@@ -141,7 +141,7 @@ test/                     # espelha lib/
 - [x] Fase 3 — Mapa
 - [x] Fase 4 — Perfil e edição
 - [x] Fase 5 — Cuidados e histórico
-- [ ] Fase 6 — Informações, acessibilidade e entrega
+- [ ] Fase 6 — Informações, acessibilidade e entrega *(testes, acessibilidade medida e documentação prontos; faltam testar em aparelho, gerar o APK e montar os slides)*
 
 Detalhes em [docs/08-plano-de-desenvolvimento.md](docs/08-plano-de-desenvolvimento.md).
 

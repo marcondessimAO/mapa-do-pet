@@ -53,38 +53,41 @@ class _MapPageState extends State<MapPage> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: FlutterMap(
-              mapController: _controller,
-              options: MapOptions(
-                initialCenter: AppConstants.defaultMapCenter,
-                initialZoom: AppConstants.defaultMapZoom,
-                onTap: (_, point) => unawaited(_askToRegister(point)),
-                interactionOptions: const InteractionOptions(
-                  flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+            child: Semantics(
+              label: 'Mapa dos animais cadastrados',
+              child: FlutterMap(
+                mapController: _controller,
+                options: MapOptions(
+                  initialCenter: AppConstants.defaultMapCenter,
+                  initialZoom: AppConstants.defaultMapZoom,
+                  onTap: (_, point) => unawaited(_askToRegister(point)),
+                  interactionOptions: const InteractionOptions(
+                    flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+                  ),
                 ),
+                children: [
+                  OsmTileLayer(onTileError: vm.reportTileError),
+                  MarkerLayer(
+                    markers: [
+                      for (final pet in vm.visiblePets)
+                        Marker(
+                          key: ValueKey(pet.id),
+                          point: LatLng(
+                            pet.location.latitude,
+                            pet.location.longitude,
+                          ),
+                          width: PetMarker.touchSize,
+                          height: PetMarker.touchSize,
+                          child: PetMarker(
+                            pet: pet,
+                            onTap: () => unawaited(_showSummary(pet)),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const OsmAttribution(),
+                ],
               ),
-              children: [
-                OsmTileLayer(onTileError: vm.reportTileError),
-                MarkerLayer(
-                  markers: [
-                    for (final pet in vm.visiblePets)
-                      Marker(
-                        key: ValueKey(pet.id),
-                        point: LatLng(
-                          pet.location.latitude,
-                          pet.location.longitude,
-                        ),
-                        width: PetMarker.touchSize,
-                        height: PetMarker.touchSize,
-                        child: PetMarker(
-                          pet: pet,
-                          onTap: () => unawaited(_showSummary(pet)),
-                        ),
-                      ),
-                  ],
-                ),
-                const OsmAttribution(),
-              ],
             ),
           ),
           Positioned(
@@ -118,7 +121,7 @@ class _MapPageState extends State<MapPage> {
           const Positioned(
             left: 12,
             right: 12,
-            bottom: 36,
+            bottom: 60,
             child: _Panel(
               child: Text(
                 'Tem um animal por aqui? Toque em um lugar livre do mapa '
