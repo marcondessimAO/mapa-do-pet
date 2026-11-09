@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/services/image_storage_service.dart';
 import '../../../../core/state/view_state.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../domain/entities/pet.dart';
@@ -23,32 +24,76 @@ class PetListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<PetListViewModel>();
 
+    final total = vm.totalCount;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Animais')),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: TextField(
-              key: const ValueKey('searchField'),
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                hintText: 'Buscar por nome ou região',
-                border: OutlineInputBorder(),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Animais', style: textTheme.headlineMedium),
+                  if (total > 0)
+                    Text(
+                      total == 1
+                          ? '1 animal esperando um lar'
+                          : '$total animais esperando um lar',
+                      style: textTheme.bodyMedium,
+                    ),
+                ],
               ),
-              onChanged: vm.setQuery,
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: SpeciesFilterBar(
-              selected: vm.species,
-              onChanged: vm.setSpecies,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: TextField(
+                key: const ValueKey('searchField'),
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.search),
+                  hintText: 'Buscar por nome ou região',
+                ),
+                onChanged: vm.setQuery,
+              ),
             ),
-          ),
-          Expanded(child: _Body(vm: vm)),
-        ],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              child: SpeciesFilterBar(
+                selected: vm.species,
+                onChanged: vm.setSpecies,
+              ),
+            ),
+            Expanded(child: _Body(vm: vm)),
+          ],
+        ),
       ),
+    );
+  }
+}
+
+/// Entrada suave de cada cartão (sobe e aparece), um pouco depois do anterior.
+class _Reveal extends StatelessWidget {
+  const _Reveal({required this.index, required this.child});
+
+  final int index;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final delay = (index > 5 ? 5 : index) * 50;
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: Duration(milliseconds: 280 + delay),
+      curve: Curves.easeOutCubic,
+      builder: (context, t, child) => Opacity(
+        opacity: t,
+        child:
+            Transform.translate(offset: Offset(0, (1 - t) * 18), child: child),
+      ),
+      child: child,
     );
   }
 }
@@ -63,13 +108,21 @@ class _Body extends StatelessWidget {
     return switch (vm.state) {
       Loading() => const Center(child: CircularProgressIndicator()),
       Empty() => _emptyMessage(),
-      Loaded(:final data) => ListView.builder(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-          itemCount: data.length,
-          itemBuilder: (context, index) => PetCard(
-            pet: data[index],
-            photoFile: _photoOf(context, data[index]),
-            onTap: () => unawaited(_openProfile(context, data[index])),
+      Loaded(:final data) => RefreshIndicator(
+          color: AppColors.caramelo,
+          onRefresh: vm.load,
+          child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+            itemCount: data.length,
+            itemBuilder: (context, index) => _Reveal(
+              index: index,
+              child: PetCard(
+                pet: data[index],
+                photoFile: _photoOf(context, data[index]),
+                onTap: () => unawaited(_openProfile(context, data[index])),
+              ),
+            ),
           ),
         ),
       Failed(:final failure) =>

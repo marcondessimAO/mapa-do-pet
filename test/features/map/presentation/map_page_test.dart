@@ -229,4 +229,152 @@ void main() {
     await tester.pump();
     expect(find.text(notice), findsNothing);
   });
+
+  group('interações do redesign', () {
+    FakePetRepository oneDog() {
+      final repository = FakePetRepository();
+      repository.store['d'] = buildPet(
+        id: 'd',
+        name: 'Caramelo',
+        latitude: _centerLat,
+        longitude: _centerLng,
+      );
+      return repository;
+    }
+
+    double zoomOf(WidgetTester tester) =>
+        MapCamera.of(tester.element(find.byType(MarkerLayer))).zoom;
+
+    testWidgets('shows how many animals are on the map', (tester) async {
+      await pumpMap(tester, app(oneDog()));
+
+      expect(find.text('1 no mapa'), findsOneWidget);
+    });
+
+    testWidgets('has no counter while the map is empty', (tester) async {
+      await pumpMap(tester, app(FakePetRepository()));
+
+      expect(find.textContaining('no mapa'), findsNothing);
+    });
+
+    testWidgets('the selected marker is highlighted and can be closed',
+        (tester) async {
+      await pumpMap(tester, app(oneDog()));
+      expect(tester.widget<PetMarker>(find.byType(PetMarker)).selected, false);
+
+      await tester.tap(find.byType(PetMarker));
+      await tester.pumpAndSettle();
+      expect(tester.widget<PetMarker>(find.byType(PetMarker)).selected, true);
+      expect(find.text('Ver perfil'), findsOneWidget);
+
+      await tester.tap(find.byTooltip('Fechar'));
+      await tester.pumpAndSettle();
+      expect(tester.widget<PetMarker>(find.byType(PetMarker)).selected, false);
+      expect(find.text('Ver perfil'), findsNothing);
+    });
+
+    testWidgets('tapping the map with a card open only closes the card',
+        (tester) async {
+      await pumpMap(tester, app(oneDog()));
+      await tester.tap(find.byType(PetMarker));
+      await tester.pumpAndSettle();
+
+      await tester.tapAt(const Offset(60, 1500));
+      // O mapa espera um instante para distinguir toque simples de duplo.
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Ver perfil'), findsNothing);
+      expect(find.text('Cadastrar animal aqui?'), findsNothing);
+    });
+
+    testWidgets('the hint disappears once the user drags the map',
+        (tester) async {
+      await pumpMap(tester, app(FakePetRepository()));
+      expect(find.textContaining('Tem um animal por aqui?'), findsOneWidget);
+
+      await tester.drag(find.byType(FlutterMap), const Offset(0, -120));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Tem um animal por aqui?'), findsNothing);
+    });
+
+    testWidgets('zoom buttons move the camera smoothly', (tester) async {
+      await pumpMap(tester, app(FakePetRepository()));
+      final start = zoomOf(tester);
+
+      await tester.tap(find.byTooltip('Aproximar o mapa'));
+      await tester.pumpAndSettle();
+      expect(zoomOf(tester), closeTo(start + 1, 0.001));
+
+      await tester.tap(find.byTooltip('Afastar o mapa'));
+      await tester.pumpAndSettle();
+      expect(zoomOf(tester), closeTo(start, 0.001));
+    });
+
+    testWidgets('"mostrar todos" frames the animals again', (tester) async {
+      await pumpMap(tester, app(oneDog()));
+      for (var i = 0; i < 3; i++) {
+        await tester.tap(find.byTooltip('Aproximar o mapa'));
+        await tester.pumpAndSettle();
+      }
+      final zoomedIn = zoomOf(tester);
+
+      await tester.tap(find.byTooltip('Mostrar todos os animais'));
+      await tester.pumpAndSettle();
+
+      expect(zoomOf(tester), isNot(closeTo(zoomedIn, 0.01)));
+    });
+
+    testWidgets('"Adicionar animal" opens the placing mode', (tester) async {
+      await pumpMap(tester, app(FakePetRepository()));
+
+      await tester.tap(find.text('Adicionar animal'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Confirmar local'), findsOneWidget);
+      expect(find.textContaining('Arraste o mapa'), findsOneWidget);
+      expect(find.textContaining('Tem um animal por aqui?'), findsNothing);
+      expect(find.text('Adicionar animal'), findsNothing);
+    });
+
+    testWidgets('cancelling the placing mode goes back to normal',
+        (tester) async {
+      await pumpMap(tester, app(FakePetRepository()));
+      await tester.tap(find.text('Adicionar animal'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Cancelar'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Confirmar local'), findsNothing);
+      expect(find.text('Adicionar animal'), findsOneWidget);
+    });
+
+    testWidgets('tapping the map in the placing mode does not ask anything',
+        (tester) async {
+      await pumpMap(tester, app(FakePetRepository()));
+      await tester.tap(find.text('Adicionar animal'));
+      await tester.pumpAndSettle();
+
+      await tapMapCenter(tester);
+
+      expect(find.text('Cadastrar animal aqui?'), findsNothing);
+      expect(find.text('Confirmar local'), findsOneWidget);
+    });
+
+    testWidgets('confirming the location opens the form at the map center',
+        (tester) async {
+      await pumpMap(tester, app(FakePetRepository()));
+      await tester.tap(find.text('Adicionar animal'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Confirmar local'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Novo animal'), findsOneWidget);
+      expect(find.textContaining('-15.79'), findsOneWidget);
+      expect(find.textContaining('-47.88'), findsOneWidget);
+    });
+  });
 }

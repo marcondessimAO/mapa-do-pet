@@ -14,4 +14,11 @@ abstract final class AppColors {
   static const Color contorno = Color(0x6649382D); // marrom 40 %
   static const Color desabilitado = Color(0x6149382D); // marrom 38 %
   static const Color selecao = Color(0x55B97942); // caramelo ~33 %
+
+  /// Areia diluída no branco (40 %): fundo de campos, cartões e chips.
+  /// Marrom sobre ela mantém contraste > 9:1.
+  static const Color areiaClara = Color(0xFFF5E6D5);
+
+  /// Sombra suave dos elementos flutuantes (marrom 18 %).
+  static const Color sombra = Color(0x2E49382D);
 }
